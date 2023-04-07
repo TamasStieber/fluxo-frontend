@@ -4,6 +4,7 @@ export interface User {
   lastName: string;
   email: string;
   createdAt: Date;
+  profilePictureUrl: string;
   posts: Post[];
   acquaintances: User[];
 }

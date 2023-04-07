@@ -15,6 +15,8 @@ import React from 'react';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import Likes from './Likes';
 import { useRouter } from 'next/router';
+import UserAvatar from './UserAvatar';
+import { loggedInUser } from './PageContainer';
 
 const PostCard = ({ post }: PostCardProps) => {
   const router = useRouter();
@@ -29,10 +31,7 @@ const PostCard = ({ post }: PostCardProps) => {
     <Box shadow='md' borderRadius='10px' padding={2} marginY={2}>
       <HStack justifyContent='space-between' alignItems='flex-start'>
         <HStack>
-          <Avatar
-            name={`${post.author.firstName} ${post.author.lastName}`}
-            src=''
-          />
+          <UserAvatar user={post.author} />
           <Stack spacing={0}>
             <Button
               fontWeight='bold'

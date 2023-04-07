@@ -12,38 +12,57 @@ import {
   Flex,
   Avatar,
   Text,
+  HStack,
 } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import { CgProfile } from 'react-icons/cg';
-import { AiOutlineSetting, AiOutlineLogout } from 'react-icons/ai';
+import { IoMdNotificationsOutline } from 'react-icons/io';
+import {
+  AiOutlineSetting,
+  AiOutlineLogout,
+  AiOutlineMessage,
+} from 'react-icons/ai';
 import ColorModeSwitch from './ColorModeSwitch';
 import { loggedInUser } from './PageContainer';
+import UserAvatar from './UserAvatar';
 
 const UserMenu = () => {
   const router = useRouter();
 
   const handleLogout = () => {
-    logout();
-    router.push('/login');
+    logout(() => router.push('/login'));
   };
 
   const redirectToProfile = () => {
     router.push(`/users/${getCurrentUserId()}`);
   };
 
+  const redirectToSettings = () => {
+    router.push(`/settings`);
+  };
+
   return (
-    <Flex justifyContent='flex-end' marginRight={2}>
+    <HStack justifyContent='flex-end' marginRight={2}>
+      <IconButton
+        variant='ghost'
+        aria-label='Messages'
+        icon={<AiOutlineMessage fontSize='1.5rem' />}
+      />
       <Menu closeOnSelect={false}>
         <MenuButton>
-          <Avatar
-            size='sm'
-            name={
-              loggedInUser
-                ? `${loggedInUser.firstName} ${loggedInUser.lastName}`
-                : undefined
-            }
-            src=''
+          <IconButton
+            variant='ghost'
+            aria-label='Notifications'
+            icon={<IoMdNotificationsOutline fontSize='1.5rem' />}
           />
+        </MenuButton>
+        <MenuList>
+          <Text marginLeft={2}>No notifications</Text>
+        </MenuList>
+      </Menu>
+      <Menu closeOnSelect={false}>
+        <MenuButton>
+          <UserAvatar user={loggedInUser} size='sm' />
         </MenuButton>
         <MenuList>
           <Text marginLeft={2}>
@@ -58,10 +77,15 @@ const UserMenu = () => {
           </MenuGroup>
           <MenuDivider />
           <MenuGroup>
-            <MenuItem icon={<CgProfile />} onClick={redirectToProfile}>
+            <MenuItem
+              icon={<CgProfile fontSize='1.2rem' />}
+              onClick={redirectToProfile}
+            >
               My Profile
             </MenuItem>
-            <MenuItem icon={<AiOutlineSetting />}>Settings</MenuItem>
+            <MenuItem icon={<AiOutlineSetting />} onClick={redirectToSettings}>
+              Settings
+            </MenuItem>
           </MenuGroup>
           <MenuDivider />
           <MenuGroup>
@@ -71,7 +95,7 @@ const UserMenu = () => {
           </MenuGroup>
         </MenuList>
       </Menu>
-    </Flex>
+    </HStack>
   );
 };
 

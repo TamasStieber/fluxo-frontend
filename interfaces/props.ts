@@ -46,3 +46,12 @@ export interface ProfileHeaderProps {
 export interface ProfileContentProps {
   user: User | null;
 }
+
+export interface UserSettingsProps {
+  user: User | null;
+}
+
+export interface UserAvatarProps {
+  user: User | null;
+  size?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
+}

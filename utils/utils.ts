@@ -14,7 +14,10 @@ export const getCurrentUserId = () => {
   return userId;
 };
 
-export const logout = () => {
+export const logout = (callback: () => void) => {
   destroyCookie(null, 'token');
   destroyCookie(null, 'userId');
+
+  const cookies = parseCookies();
+  if (!cookies.token && !cookies.userId) callback();
 };
