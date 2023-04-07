@@ -1,13 +1,12 @@
 import { Avatar } from '@chakra-ui/react';
 import React from 'react';
-import { loggedInUser } from './PageContainer';
-import { User } from '@/interfaces/interfaces';
 import { UserAvatarProps } from '@/interfaces/props';
 
-const UserAvatar = ({ user, size }: UserAvatarProps) => {
-  let src = '';
+const UserAvatar = ({ user, size, url }: UserAvatarProps) => {
+  const urlProvided = typeof url !== 'undefined';
+  let src = urlProvided ? url : '';
 
-  if (user?.profilePictureUrl) {
+  if (!urlProvided && user?.profilePictureUrl) {
     src = `${process.env.BACKEND_URL}/${user._id}/photos/${user.profilePictureUrl}`;
   }
   const name = `${user?.firstName} ${user?.lastName}`;

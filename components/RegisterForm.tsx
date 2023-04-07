@@ -40,7 +40,7 @@ const RegisterForm = () => {
     event.preventDefault();
     const registerFormData = new FormData();
 
-    const formData: { [key: string]: string | undefined } = {
+    const formData = {
       firstName: firstNameRef.current?.value,
       lastName: lastNameRef.current?.value,
       email: emailRef.current?.value,

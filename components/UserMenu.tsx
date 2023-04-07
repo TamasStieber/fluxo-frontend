@@ -83,13 +83,19 @@ const UserMenu = () => {
             >
               My Profile
             </MenuItem>
-            <MenuItem icon={<AiOutlineSetting />} onClick={redirectToSettings}>
+            <MenuItem
+              icon={<AiOutlineSetting fontSize='1.2rem' />}
+              onClick={redirectToSettings}
+            >
               Settings
             </MenuItem>
           </MenuGroup>
           <MenuDivider />
           <MenuGroup>
-            <MenuItem icon={<AiOutlineLogout />} onClick={handleLogout}>
+            <MenuItem
+              icon={<AiOutlineLogout fontSize='1.2rem' />}
+              onClick={handleLogout}
+            >
               Logout
             </MenuItem>
           </MenuGroup>
