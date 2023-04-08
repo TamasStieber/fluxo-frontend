@@ -14,6 +14,7 @@ export interface Post {
   content: string;
   author: User;
   createdAt: Date;
+  updatedAt: Date;
   //   comments: mongoose.Types.ObjectId[];
   likes: User[];
 }

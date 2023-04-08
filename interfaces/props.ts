@@ -64,3 +64,8 @@ export interface UserAvatarProps {
 export interface SearchProps {
   query: string | string[] | undefined;
 }
+
+export interface FormattedPostContentProps {
+  length: number;
+  post: Post;
+}
