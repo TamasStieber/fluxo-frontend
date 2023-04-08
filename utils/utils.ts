@@ -21,3 +21,26 @@ export const logout = (callback: () => void) => {
   const cookies = parseCookies();
   if (!cookies.token && !cookies.userId) callback();
 };
+
+export const calculatePassedTime = (creationDate: Date) => {
+  const currentDate = new Date();
+  const millisecondsPassed = currentDate.getTime() - creationDate.getTime();
+  const secondsPassed = Math.round(millisecondsPassed / 1000);
+  const minutesPassed = Math.round(millisecondsPassed / 1000 / 60);
+  const hoursPassed = Math.round(millisecondsPassed / 1000 / 60 / 60);
+  const daysPassed = Math.round(millisecondsPassed / 1000 / 60 / 60 / 24);
+
+  if (secondsPassed < 60) return 'Just now';
+  if (minutesPassed < 60)
+    return `${minutesPassed} ${singularOrPlural(minutesPassed, 'minute')} ago`;
+  if (hoursPassed < 24)
+    return `${hoursPassed} ${singularOrPlural(hoursPassed, 'hour')} ago`;
+  if (daysPassed < 10)
+    return `${daysPassed} ${singularOrPlural(daysPassed, 'day')} ago`;
+  return creationDate.toLocaleDateString('hu-HU');
+};
+
+const singularOrPlural = (count: number, word: string) => {
+  if (count === 1) return word;
+  return word + 's';
+};

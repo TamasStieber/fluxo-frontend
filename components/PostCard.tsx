@@ -1,6 +1,6 @@
 import { Post } from '@/interfaces/interfaces';
 import { PostCardProps } from '@/interfaces/props';
-import { getCurrentUserId } from '@/utils/utils';
+import { calculatePassedTime, getCurrentUserId } from '@/utils/utils';
 import {
   Avatar,
   Box,
@@ -11,7 +11,7 @@ import {
   Stack,
   Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { useState } from 'react';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import Likes from './Likes';
 import { useRouter } from 'next/router';
@@ -19,26 +19,31 @@ import UserAvatar from './UserAvatar';
 import { loggedInUser } from './PageContainer';
 
 const PostCard = ({ post }: PostCardProps) => {
+  const creationDate = new Date(post.createdAt);
+  const [timeAgo, setTimeAgo] = useState(calculatePassedTime(creationDate));
   const router = useRouter();
   const currentUserId = getCurrentUserId();
-  const date = new Date(post.createdAt);
 
   const redirectToProfile = () => {
     router.push(`/users/${post.author._id}`);
   };
+
+  setInterval(() => {
+    setTimeAgo(calculatePassedTime(creationDate));
+  }, 1000 * 60);
 
   return (
     <Box shadow='md' borderRadius='10px' padding={2} marginY={2}>
       <HStack justifyContent='space-between' alignItems='flex-start'>
         <HStack>
           <UserAvatar user={post.author} />
-          <Stack spacing={0}>
+          <Stack spacing={0} alignItems='flex-start'>
             <Button
               fontWeight='bold'
               variant='link'
               onClick={redirectToProfile}
             >{`${post.author.firstName} ${post.author.lastName}`}</Button>
-            <Text fontSize='xs'>{date.toLocaleDateString('hu-HU')}</Text>
+            <Text fontSize='xs'>{timeAgo}</Text>
           </Stack>
         </HStack>
         {currentUserId === post.author._id && <Text>Edit</Text>}
