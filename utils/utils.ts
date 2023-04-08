@@ -31,6 +31,7 @@ export const calculatePassedTime = (creationDate: Date) => {
   const daysPassed = Math.round(millisecondsPassed / 1000 / 60 / 60 / 24);
 
   if (secondsPassed < 60) return 'Just now';
+  if (currentDate.getDate() - creationDate.getDate() === 1) return 'Yesterday';
   if (minutesPassed < 60)
     return `${minutesPassed} ${singularOrPlural(minutesPassed, 'minute')} ago`;
   if (hoursPassed < 24)
