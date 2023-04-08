@@ -13,20 +13,21 @@ import {
   Center,
 } from '@chakra-ui/react';
 import error from 'next/error';
-import React, { ChangeEvent, useRef, useState } from 'react';
+import { ChangeEvent, useRef, useState } from 'react';
 import { loggedInUser } from './PageContainer';
+import AutoResizeTextarea from './AutoResizeTextarea';
 
 const CreatePost = ({ updatePosts }: CreatePostProps) => {
   const token = checkAuth();
   const contentRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = useState('');
 
   const placeHolder = `What's on your mind, ${
     loggedInUser ? loggedInUser.firstName : ''
   }?`;
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value !== '' && error !== '') setError('');
     setValue(event.target.value);
   };
@@ -35,7 +36,7 @@ const CreatePost = ({ updatePosts }: CreatePostProps) => {
     event.preventDefault();
     if (value === '') return setError('Oops! You forgot to fill this field!');
     const postFormData = {
-      content: contentRef.current?.value,
+      content: value,
       author: getCurrentUserId(),
     };
 
@@ -61,17 +62,18 @@ const CreatePost = ({ updatePosts }: CreatePostProps) => {
   };
   return (
     <form onSubmit={(event) => submitHandler(event)}>
-      <HStack>
-        <Input
-          ref={contentRef}
+      <Stack>
+        <AutoResizeTextarea
           value={value}
           onChange={handleChange}
           placeholder={placeHolder}
         />
-        <Button type='submit' colorScheme='green'>
-          Post
-        </Button>
-      </HStack>
+        <Flex justifyContent='flex-end'>
+          <Button type='submit' colorScheme='green'>
+            Post
+          </Button>
+        </Flex>
+      </Stack>
       <Text color='red.400'>{error}</Text>
     </form>
   );
