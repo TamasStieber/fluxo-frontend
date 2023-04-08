@@ -1,6 +1,10 @@
 import { Post } from '@/interfaces/interfaces';
 import { PostCardProps } from '@/interfaces/props';
-import { calculatePassedTime, getCurrentUserId } from '@/utils/utils';
+import {
+  calculatePassedTime,
+  checkAuth,
+  getCurrentUserId,
+} from '@/utils/utils';
 import {
   Avatar,
   Box,
@@ -10,10 +14,11 @@ import {
   HStack,
   Icon,
   IconButton,
+  Input,
   Stack,
   Text,
 } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { FormEvent, useRef, useState } from 'react';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { RxDotFilled } from 'react-icons/rx';
 import Likes from './Likes';
@@ -25,9 +30,14 @@ import FormattedPostContent from './FormattedPostContent';
 const PostCard = ({ post }: PostCardProps) => {
   const creationDate = new Date(post.createdAt);
   const [timeAgo, setTimeAgo] = useState(calculatePassedTime(creationDate));
+  const [isHidden, setHidden] = useState(false);
+  const [currentPost, setCurrentPost] = useState(post);
+  const [editMode, setEditMode] = useState(false);
+  const contentEditRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const currentUserId = getCurrentUserId();
-  const isEdited = post.createdAt !== post.updatedAt;
+  const isEdited = currentPost.contentUpdated && true;
+  const token = checkAuth();
 
   const postContentLength = 200;
 
@@ -39,8 +49,64 @@ const PostCard = ({ post }: PostCardProps) => {
     setTimeAgo(calculatePassedTime(creationDate));
   }, 1000 * 60);
 
+  const handleUpdate = (event: FormEvent) => {
+    event.preventDefault();
+
+    const formData = { content: contentEditRef.current?.value };
+
+    fetch(`${process.env.BACKEND_URL}/posts/${post._id}`, {
+      method: 'put',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) console.error(data.error);
+        else {
+          setCurrentPost(data.updatedPost);
+          setEditMode(false);
+        }
+      });
+  };
+
+  const handleDelete = () => {
+    fetch(`${process.env.BACKEND_URL}/posts/${post._id}`, {
+      method: 'delete',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) console.error(data.error);
+        else setHidden(true);
+      });
+  };
+
+  const handleClickEvent = (event: MouseEvent) => {
+    // console.log(editMode);
+    // document.removeEventListener('click', handleClickEvent);
+    // if (editMode && event.target !== contentEditRef.current) {
+    //   setEditMode(!editMode);
+    // }
+  };
+
+  document.addEventListener('click', handleClickEvent);
+  // if (editMode && event.target !== contentEditRef.current)
+  // setEditMode(!editMode);
+  // this.removeEventListener('click', this)
+
   return (
-    <Box shadow='md' borderRadius='10px' padding={2} marginY={2}>
+    <Box
+      shadow='md'
+      borderRadius='10px'
+      padding={2}
+      marginY={2}
+      display={isHidden ? 'none' : 'block'}
+    >
       <HStack justifyContent='space-between' alignItems='flex-start'>
         <HStack>
           <UserAvatar user={post.author} />
@@ -65,20 +131,37 @@ const PostCard = ({ post }: PostCardProps) => {
           {currentUserId === post.author._id && (
             <IconButton
               variant='ghost'
-              aria-label='Messages'
+              aria-label='Edit Post'
+              _hover={{ color: 'blue.400' }}
               icon={<AiOutlineEdit fontSize='1.2rem' />}
+              onClick={() => setEditMode(!editMode)}
             />
           )}
           {currentUserId === post.author._id && (
             <IconButton
               variant='ghost'
-              aria-label='Messages'
+              aria-label='Delete Post'
+              _hover={{ color: 'red.400' }}
               icon={<AiOutlineDelete fontSize='1.2rem' />}
+              onClick={handleDelete}
             />
           )}
         </HStack>
       </HStack>
-      <FormattedPostContent length={postContentLength} post={post} />
+      {editMode ? (
+        <form onSubmit={(event) => handleUpdate(event)}>
+          <Input
+            ref={contentEditRef}
+            defaultValue={post.content}
+            autoFocus={editMode}
+          />
+        </form>
+      ) : (
+        <FormattedPostContent
+          length={postContentLength}
+          content={currentPost.content}
+        />
+      )}
       <Likes currentUserId={currentUserId} post={post} />
     </Box>
   );

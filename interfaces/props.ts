@@ -67,5 +67,5 @@ export interface SearchProps {
 
 export interface FormattedPostContentProps {
   length: number;
-  post: Post;
+  content: Post['content'];
 }

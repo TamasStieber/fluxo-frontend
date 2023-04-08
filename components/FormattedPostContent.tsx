@@ -2,14 +2,15 @@ import { FormattedPostContentProps } from '@/interfaces/props';
 import { Button, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 
-const FormattedPostContent = ({ length, post }: FormattedPostContentProps) => {
+const FormattedPostContent = ({
+  length,
+  content,
+}: FormattedPostContentProps) => {
   const [isExpanded, setExpanded] = useState(false);
 
-  const isTooLong = post.content.length > length;
+  const isTooLong = content.length > length;
   const formattedText =
-    isExpanded || !isTooLong
-      ? post.content
-      : post.content.slice(0, length) + '...';
+    isExpanded || !isTooLong ? content : content.slice(0, length) + '...';
 
   return (
     <>
