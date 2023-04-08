@@ -15,8 +15,16 @@ import {
   Icon,
   IconButton,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Stack,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import React, { FormEvent, useRef, useState } from 'react';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
@@ -40,6 +48,8 @@ const PostCard = ({ post }: PostCardProps) => {
   const token = checkAuth();
 
   const postContentLength = 200;
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const redirectToProfile = () => {
     router.push(`/users/${post.author._id}`);
@@ -68,6 +78,7 @@ const PostCard = ({ post }: PostCardProps) => {
         else {
           setCurrentPost(data.updatedPost);
           setEditMode(false);
+          onClose();
         }
       });
   };
@@ -100,70 +111,114 @@ const PostCard = ({ post }: PostCardProps) => {
   // this.removeEventListener('click', this)
 
   return (
-    <Box
-      shadow='md'
-      borderRadius='10px'
-      padding={2}
-      marginY={2}
-      display={isHidden ? 'none' : 'block'}
-    >
-      <HStack justifyContent='space-between' alignItems='flex-start'>
-        <HStack>
-          <UserAvatar user={post.author} />
-          <Stack spacing={0} alignItems='flex-start'>
-            <Button
-              fontWeight='bold'
-              variant='link'
-              onClick={redirectToProfile}
-            >{`${post.author.firstName} ${post.author.lastName}`}</Button>
-            <HStack spacing={0}>
-              <Text fontSize='xs'>{timeAgo}</Text>
-              {isEdited && (
-                <>
-                  <Icon color='gray.400' as={RxDotFilled} />
-                  <Text fontSize='xs'>Edited</Text>
-                </>
-              )}
-            </HStack>
-          </Stack>
+    <>
+      <Box
+        shadow='md'
+        borderRadius='10px'
+        padding={2}
+        marginY={2}
+        display={isHidden ? 'none' : 'block'}
+      >
+        <HStack justifyContent='space-between' alignItems='flex-start'>
+          <HStack>
+            <UserAvatar user={post.author} />
+            <Stack spacing={0} alignItems='flex-start'>
+              <Button
+                fontWeight='bold'
+                variant='link'
+                onClick={redirectToProfile}
+              >{`${post.author.firstName} ${post.author.lastName}`}</Button>
+              <HStack spacing={0}>
+                <Text fontSize='xs'>{timeAgo}</Text>
+                {isEdited && (
+                  <>
+                    <Icon color='gray.400' as={RxDotFilled} />
+                    <Text fontSize='xs'>Edited</Text>
+                  </>
+                )}
+              </HStack>
+            </Stack>
+          </HStack>
+          <HStack spacing={0}>
+            {currentUserId === post.author._id && (
+              <IconButton
+                variant='ghost'
+                aria-label='Edit Post'
+                _hover={{ color: 'blue.400' }}
+                icon={<AiOutlineEdit fontSize='1.2rem' />}
+                onClick={() => setEditMode(!editMode)}
+              />
+            )}
+            {currentUserId === post.author._id && (
+              <IconButton
+                variant='ghost'
+                aria-label='Delete Post'
+                _hover={{ color: 'red.400' }}
+                icon={<AiOutlineDelete fontSize='1.2rem' />}
+                onClick={onOpen}
+              />
+            )}
+          </HStack>
         </HStack>
-        <HStack spacing={0}>
-          {currentUserId === post.author._id && (
-            <IconButton
-              variant='ghost'
-              aria-label='Edit Post'
-              _hover={{ color: 'blue.400' }}
-              icon={<AiOutlineEdit fontSize='1.2rem' />}
-              onClick={() => setEditMode(!editMode)}
+        {editMode ? (
+          <form onSubmit={(event) => handleUpdate(event)}>
+            <Input
+              ref={contentEditRef}
+              defaultValue={post.content}
+              autoFocus={editMode}
             />
-          )}
-          {currentUserId === post.author._id && (
-            <IconButton
-              variant='ghost'
-              aria-label='Delete Post'
-              _hover={{ color: 'red.400' }}
-              icon={<AiOutlineDelete fontSize='1.2rem' />}
-              onClick={handleDelete}
-            />
-          )}
-        </HStack>
-      </HStack>
-      {editMode ? (
-        <form onSubmit={(event) => handleUpdate(event)}>
-          <Input
-            ref={contentEditRef}
-            defaultValue={post.content}
-            autoFocus={editMode}
+          </form>
+        ) : (
+          <FormattedPostContent
+            length={postContentLength}
+            content={currentPost.content}
           />
-        </form>
-      ) : (
-        <FormattedPostContent
-          length={postContentLength}
-          content={currentPost.content}
-        />
-      )}
-      <Likes currentUserId={currentUserId} post={post} />
-    </Box>
+        )}
+        <Likes currentUserId={currentUserId} post={post} />
+      </Box>
+      <OnDeleteModal
+        isOpen={isOpen}
+        onClose={onClose}
+        deleteHandler={handleDelete}
+      />
+    </>
+  );
+};
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  deleteHandler: () => void;
+}
+
+const OnDeleteModal = ({ isOpen, onClose, deleteHandler }: ModalProps) => {
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Delete Post</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>Do you really want to delete this post?</Text>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button
+            colorScheme='red'
+            mr={3}
+            onClick={() => {
+              deleteHandler();
+              onClose();
+            }}
+          >
+            Delete
+          </Button>
+          <Button variant='ghost' onClick={onClose}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
   );
 };
 
