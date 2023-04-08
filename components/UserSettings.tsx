@@ -12,7 +12,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import React, { ChangeEvent, useRef, useState } from 'react';
-import { loggedInUser } from './PageContainer';
+import { currentUserObj, loggedInUser } from './PageContainer';
 import UserAvatar from './UserAvatar';
 import { checkAuth } from '@/utils/utils';
 
@@ -68,6 +68,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
       .then((response) =>
         response.json().then((data) => {
           if (!data.error) {
+            currentUserObj.set(data);
             toast({
               title: 'Profile updated successfully.',
               status: 'success',

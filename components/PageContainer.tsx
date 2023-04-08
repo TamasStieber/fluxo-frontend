@@ -3,10 +3,13 @@ import NavBar from './NavBar';
 import { checkAuth, getCurrentUserId } from '@/utils/utils';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { Box, Center } from '@chakra-ui/react';
+import { Box } from '@chakra-ui/react';
 import { User } from '@/interfaces/interfaces';
 
 export let loggedInUser: User | null = null;
+export const currentUserObj = {
+  set: (user: User) => {},
+};
 
 const PageContainer = ({ children }: PageContainerProps) => {
   const router = useRouter();
@@ -14,6 +17,8 @@ const PageContainer = ({ children }: PageContainerProps) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   const currentUserId = getCurrentUserId();
+
+  currentUserObj.set = (user: User) => setCurrentUser(user);
 
   loggedInUser = currentUser ? currentUser : null;
 

@@ -1,31 +1,24 @@
-import { User } from '@/pages/users';
-import { Avatar, Flex, Stack, Text } from '@chakra-ui/react';
+import { UserCardProps } from '@/interfaces/props';
+import { Avatar, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react';
 import React from 'react';
+import UserAvatar from './UserAvatar';
+import { useRouter } from 'next/router';
 
-interface Props {
-  user: User;
-}
-
-const UserCard = ({ user }: Props) => {
+const UserCard = ({ user }: UserCardProps) => {
+  const router = useRouter();
   const date = new Date(user.createdAt);
+
+  const handleClick = () => {
+    router.push(`/users/${user._id}`);
+  };
+
   return (
-    <Flex
-      maxWidth={500}
-      display='inline-flex'
-      align='center'
-      margin={2}
-      padding={2}
-      borderRadius='10px'
-      backgroundColor='gray.700'
-    >
-      <Avatar
-        size='lg'
-        mr={4}
-        name={`${user.firstName} ${user.lastName}`}
-        src='https://bit.ly/dan-abramov'
-      />
-      <Stack spacing={0}>
-        <Text fontSize='2xl'>{user.firstName + ' ' + user.lastName}</Text>
+    <HStack marginY={4}>
+      <UserAvatar user={user} size='lg' />
+      <Stack spacing={0} alignItems='flex-start'>
+        <Button variant='link' fontSize='xl' onClick={handleClick}>
+          {user.firstName + ' ' + user.lastName}
+        </Button>
         <Text color='gray.400' fontSize='lg'>
           {user.email}
         </Text>
@@ -34,7 +27,7 @@ const UserCard = ({ user }: Props) => {
           fontSize='md'
         >{`Member since ${date.toLocaleDateString('hu-HU')}`}</Text>
       </Stack>
-    </Flex>
+    </HStack>
   );
 };
 

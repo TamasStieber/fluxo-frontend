@@ -51,8 +51,16 @@ export interface UserSettingsProps {
   user: User | null;
 }
 
+export interface UserCardProps {
+  user: User;
+}
+
 export interface UserAvatarProps {
   user: User | null;
   size?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
   url?: string;
+}
+
+export interface SearchProps {
+  query: string | string[] | undefined;
 }

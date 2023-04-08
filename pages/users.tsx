@@ -52,11 +52,11 @@ const Users = () => {
 
   return (
     <>
-      {users.length > 0 &&
+      {/* {users.length > 0 &&
         users.map((user) => <UserCard key={user.email} user={user} />)}
       {posts.length > 0 &&
         posts.map((post) => <PostCard key={post._id} post={post} />)}
-      {/* <CreatePost /> */}
+      <CreatePost /> */}
     </>
   );
 };
