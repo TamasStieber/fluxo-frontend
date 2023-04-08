@@ -13,7 +13,7 @@ const Home = () => {
   const [posts, setPosts] = useState<Post[]>([]);
 
   const updatePosts = (post: Post) => {
-    setPosts([...posts, post]);
+    setPosts([post, ...posts]);
   };
 
   useEffect(() => {
