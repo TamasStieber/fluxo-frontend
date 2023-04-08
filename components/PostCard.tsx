@@ -119,7 +119,11 @@ const PostCard = ({ post }: PostCardProps) => {
         marginY={2}
         display={isHidden ? 'none' : 'block'}
       >
-        <HStack justifyContent='space-between' alignItems='flex-start'>
+        <HStack
+          justifyContent='space-between'
+          alignItems='flex-start'
+          marginBottom={4}
+        >
           <HStack>
             <UserAvatar user={post.author} />
             <Stack spacing={0} alignItems='flex-start'>

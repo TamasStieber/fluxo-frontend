@@ -14,7 +14,7 @@ const FormattedPostContent = ({
 
   return (
     <>
-      <Text display='inline' marginTop={4}>
+      <Text whiteSpace='pre-wrap' display='inline' marginTop={4}>
         {formattedText}
       </Text>
       {isTooLong && (
