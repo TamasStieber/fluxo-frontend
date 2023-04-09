@@ -19,3 +19,12 @@ export interface Post {
   //   comments: mongoose.Types.ObjectId[];
   likes: User[];
 }
+
+export interface Message {
+  _id: string;
+  sender: string;
+  receiver: string;
+  content: string;
+  isRead: boolean;
+  createdAt: Date;
+}

@@ -41,12 +41,17 @@ const UserMenu = () => {
     router.push(`/settings`);
   };
 
+  const redirectToMessages = () => {
+    router.push(`/messages`);
+  };
+
   return (
     <HStack justifyContent='flex-end' marginRight={2}>
       <IconButton
         variant='ghost'
         aria-label='Messages'
         icon={<AiOutlineMessage fontSize='1.5rem' />}
+        onClick={redirectToMessages}
       />
       <Menu closeOnSelect={false}>
         <MenuButton>
