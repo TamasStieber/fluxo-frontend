@@ -41,14 +41,19 @@ const LoginForm = () => {
     })
       .then((response) =>
         response.json().then((data) => {
+          const expires = new Date();
+          expires.setDate(expires.getDate() + 1);
+
           if (data.error) setError(data.error);
           if (data.token) {
             setCookie(null, 'token', data.token, {
-              maxAge: 24 * 60 * 60,
+              maxAge: 0,
+              expires,
               path: '/',
             });
             setCookie(null, 'userId', data.userId, {
-              maxAge: 24 * 60 * 60,
+              maxAge: 0,
+              expires,
               path: '/',
             });
             router.push('/');
