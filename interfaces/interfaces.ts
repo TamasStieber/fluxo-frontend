@@ -5,7 +5,9 @@ export interface User {
   email: string;
   createdAt: Date;
   profilePictureUrl: string;
+  lastReadMessages: LastReadMessage[];
   posts: Post[];
+  likedPosts: Post[];
   acquaintances: User[];
 }
 
@@ -27,4 +29,16 @@ export interface Message {
   content: string;
   isRead: boolean;
   createdAt: Date;
+}
+
+export interface Conversation {
+  _id: string;
+  participants: User[];
+  messages: Message[];
+  lastMessage: Message;
+}
+
+export interface LastReadMessage {
+  conversation: string;
+  lastReadMessage: string;
 }

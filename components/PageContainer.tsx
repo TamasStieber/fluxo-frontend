@@ -20,7 +20,7 @@ const PageContainer = ({ children }: PageContainerProps) => {
 
   currentUserObj.set = (user: User) => setCurrentUser(user);
 
-  loggedInUser = currentUser ? currentUser : null;
+  loggedInUser = currentUser;
 
   useEffect(() => {
     if (token) {

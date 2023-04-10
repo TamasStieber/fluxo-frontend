@@ -47,12 +47,12 @@ const LoginForm = () => {
           if (data.error) setError(data.error);
           if (data.token) {
             setCookie(null, 'token', data.token, {
-              maxAge: 0,
+              maxAge: 60 * 60 * 24,
               expires,
               path: '/',
             });
             setCookie(null, 'userId', data.userId, {
-              maxAge: 0,
+              maxAge: 60 * 60 * 24,
               expires,
               path: '/',
             });
