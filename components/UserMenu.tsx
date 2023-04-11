@@ -23,10 +23,13 @@ import {
   AiOutlineMessage,
 } from 'react-icons/ai';
 import ColorModeSwitch from './ColorModeSwitch';
-import { loggedInUser } from './PageContainer';
+// import { loggedInUser } from './PageContainer';
 import UserAvatar from './UserAvatar';
+import { useContext } from 'react';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 const UserMenu = () => {
+  const { currentUser } = useContext(CurrentUserContext);
   const router = useRouter();
 
   const handleLogout = () => {
@@ -67,12 +70,11 @@ const UserMenu = () => {
       </Menu>
       <Menu closeOnSelect={false}>
         <MenuButton>
-          <UserAvatar user={loggedInUser} size='sm' />
+          <UserAvatar user={currentUser} size='sm' />
         </MenuButton>
         <MenuList>
           <Text marginLeft={2}>
-            {loggedInUser &&
-              `${loggedInUser.firstName} ${loggedInUser.lastName}`}
+            {currentUser && `${currentUser.firstName} ${currentUser.lastName}`}
           </Text>
           <MenuDivider />
           <MenuGroup>
@@ -92,7 +94,7 @@ const UserMenu = () => {
               icon={<AiOutlineSetting fontSize='1.2rem' />}
               onClick={redirectToSettings}
             >
-              Settings
+              Account Settings
             </MenuItem>
           </MenuGroup>
           <MenuDivider />

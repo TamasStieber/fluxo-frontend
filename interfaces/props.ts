@@ -62,7 +62,7 @@ export interface UserAvatarProps {
 }
 
 export interface SearchProps {
-  query: string | string[] | undefined;
+  query: string;
 }
 
 export interface FormattedPostContentProps {

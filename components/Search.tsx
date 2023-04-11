@@ -3,7 +3,9 @@ import { SearchProps } from '@/interfaces/props';
 import { checkAuth } from '@/utils/utils';
 import {
   Box,
+  Center,
   Heading,
+  Spinner,
   Tab,
   TabList,
   TabPanel,
@@ -14,31 +16,42 @@ import {
 import React, { useEffect, useState } from 'react';
 import UserCard from './UserCard';
 import PostCard from './PostCard';
+import useSearch from '@/hooks/useSearch';
 
 const Search = ({ query }: SearchProps) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { users, posts, isLoading, error } = useSearch(query);
+  // const [users, setUsers] = useState<User[]>([]);
+  // const [posts, setPosts] = useState<Post[]>([]);
 
-  const token = checkAuth();
+  // const token = checkAuth();
 
-  useEffect(() => {
-    fetch(`${process.env.BACKEND_URL}/search/${query}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) {
-          setUsers([]);
-          setPosts([]);
-        } else {
-          setUsers(data.users);
-          setPosts(data.posts);
-        }
-      });
-  }, [query, token]);
+  // useEffect(() => {
+  //   fetch(`${process.env.BACKEND_URL}/search/${query}`, {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       'Content-Type': 'application/json',
+  //     },
+  //   })
+  //     .then((response) => response.json())
+  //     .then((data) => {
+  //       if (data.error) {
+  //         setUsers([]);
+  //         setPosts([]);
+  //       } else {
+  //         setUsers(data.users);
+  //         setPosts(data.posts);
+  //       }
+  //     });
+  // }, [query, token]);
+
+  if (isLoading)
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+
+  if (error) return <div>An error occurred</div>;
 
   return (
     <Box>

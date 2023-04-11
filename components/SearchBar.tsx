@@ -19,7 +19,7 @@ const SearchBar = () => {
           <InputLeftElement
             pointerEvents='none'
             // eslint-disable-next-line react/no-children-prop
-            children={<AiOutlineSearch color='gray.300' />}
+            children={<AiOutlineSearch color='gray.300' fontSize='1.2rem' />}
           />
           <Input
             ref={searchRef}

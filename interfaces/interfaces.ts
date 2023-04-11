@@ -5,6 +5,7 @@ export interface User {
   email: string;
   createdAt: Date;
   profilePictureUrl: string;
+  photosFolder: string;
   lastReadMessages: LastReadMessage[];
   posts: Post[];
   likedPosts: Post[];

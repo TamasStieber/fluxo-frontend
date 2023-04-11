@@ -11,22 +11,31 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import React, { ChangeEvent, useRef, useState } from 'react';
-import { currentUserObj, loggedInUser } from './PageContainer';
+import React, {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import UserAvatar from './UserAvatar';
 import { checkAuth } from '@/utils/utils';
+import useCurrentUser from '@/hooks/useCurrentUser';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 const UserSettings = ({ user }: UserSettingsProps) => {
-  const userProfilePictureUrl = `${process.env.BACKEND_URL}/${loggedInUser?._id}/photos/${loggedInUser?.profilePictureUrl}`;
+  const { currentUser, isLoading, isUpdating, error, updateUser } =
+    useContext(CurrentUserContext);
+  const userProfilePictureUrl = `${process.env.BACKEND_URL}/${currentUser?.photosFolder}/${currentUser?.profilePictureUrl}`;
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const oldPasswordRef = useRef<HTMLInputElement>(null);
   const newPasswordRef = useRef<HTMLInputElement>(null);
   const newPasswordAgainRef = useRef<HTMLInputElement>(null);
-  const [firstName, setFirstName] = useState(loggedInUser?.firstName);
-  const [lastName, setLastName] = useState(loggedInUser?.lastName);
-  const [email, setEmail] = useState(loggedInUser?.email);
   const [avatar, setAvatar] = useState(userProfilePictureUrl);
-  const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState('');
 
   const toast = useToast();
 
@@ -47,9 +56,9 @@ const UserSettings = ({ user }: UserSettingsProps) => {
     const updateFormData = new FormData();
 
     const formData = {
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
+      firstName: firstNameRef.current?.value,
+      lastName: lastNameRef.current?.value,
+      email: emailRef.current?.value,
     };
 
     updateFormData.append('data', JSON.stringify(formData));
@@ -58,27 +67,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
       fileInputRef.current?.files ? fileInputRef.current.files[0] : ''
     );
 
-    fetch(`${process.env.BACKEND_URL}/users/${loggedInUser?._id}`, {
-      method: 'put',
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: updateFormData,
-    })
-      .then((response) =>
-        response.json().then((data) => {
-          if (!data.error) {
-            currentUserObj.set(data);
-            toast({
-              title: 'Profile updated successfully.',
-              status: 'success',
-              duration: 3000,
-              isClosable: true,
-            });
-          }
-        })
-      )
-      .catch((error) => console.log(error));
+    updateUser(updateFormData);
   };
 
   const passwordSubmitHandler = async (event: React.FormEvent) => {
@@ -89,17 +78,17 @@ const UserSettings = ({ user }: UserSettingsProps) => {
       !newPasswordRef.current?.value ||
       !newPasswordAgainRef.current?.value
     )
-      return setError('Please fill all fields!');
+      return setValidationError('Please fill all fields!');
 
     if (newPasswordRef.current?.value !== newPasswordAgainRef.current?.value)
-      return setError("New password fields don't match!");
+      return setValidationError("New password fields don't match!");
 
     const formData = {
       oldPassword: oldPasswordRef.current?.value,
       newPassword: newPasswordRef.current?.value,
     };
 
-    fetch(`${process.env.BACKEND_URL}/users/${loggedInUser?._id}/password`, {
+    fetch(`${process.env.BACKEND_URL}/users/password`, {
       method: 'put',
       headers: {
         Authorization: `Bearer ${token}`,
@@ -109,7 +98,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
     })
       .then((response) =>
         response.json().then((data) => {
-          if (data.error) setError(data.error);
+          if (data.error) setValidationError(data.error);
           else {
             toast({
               title: 'Password updated successfully.',
@@ -139,27 +128,24 @@ const UserSettings = ({ user }: UserSettingsProps) => {
                   <Stack flexGrow={1}>
                     <Text>First Name</Text>
                     <Input
-                      value={firstName}
-                      onChange={(event) => setFirstName(event.target.value)}
+                      ref={firstNameRef}
+                      defaultValue={currentUser?.firstName}
                     />
                   </Stack>
                   <Stack flexGrow={1}>
                     <Text>Last Name</Text>
                     <Input
-                      value={lastName}
-                      onChange={(event) => setLastName(event.target.value)}
+                      ref={lastNameRef}
+                      defaultValue={currentUser?.lastName}
                     />
                   </Stack>
                 </HStack>
                 <Text>Email</Text>
-                <Input
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
+                <Input ref={emailRef} defaultValue={currentUser?.email} />
                 <HStack justifyContent='flex-end'></HStack>
               </Stack>
               <Stack spacing={4} paddingX={4} alignItems='center'>
-                <UserAvatar user={loggedInUser} size='2xl' url={avatar} />
+                <UserAvatar user={currentUser} size='2xl' url={avatar} />
                 <Button onClick={openFileBrowser}>Change Avatar</Button>
                 <input
                   style={{ display: 'none' }}
@@ -177,7 +163,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
               </Stack>
             </HStack>
             <HStack justifyContent='flex-end'>
-              <Button type='submit' colorScheme='green'>
+              <Button isLoading={isUpdating} type='submit' colorScheme='green'>
                 Save
               </Button>
             </HStack>
@@ -197,7 +183,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
             <Text>New Password Again</Text>
             <Input ref={newPasswordAgainRef} type='password' />
             <HStack justifyContent='space-between'>
-              <Text color='red.400'>{error}</Text>
+              <Text color='red.400'>{validationError}</Text>
               <Button type='submit' colorScheme='green'>
                 Save
               </Button>

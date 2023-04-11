@@ -7,7 +7,7 @@ const UserAvatar = ({ user, size, url }: UserAvatarProps) => {
   let src = urlProvided ? url : '';
 
   if (!urlProvided && user?.profilePictureUrl) {
-    src = `${process.env.BACKEND_URL}/${user._id}/photos/${user.profilePictureUrl}`;
+    src = `${process.env.BACKEND_URL}/${user.photosFolder}/${user.profilePictureUrl}`;
   }
   const name = `${user?.firstName} ${user?.lastName}`;
   return <Avatar size={size ? size : 'md'} name={name} src={src}></Avatar>;
