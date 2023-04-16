@@ -7,6 +7,7 @@ type UserContextProps = {
   isUpdating: boolean;
   error: Error | null;
   updateUser: (formData: FormData) => void;
+  refreshUser: () => void;
 };
 
 const contextInitializer = {
@@ -15,6 +16,7 @@ const contextInitializer = {
   isUpdating: false,
   error: null,
   updateUser: () => {},
+  refreshUser: () => {},
 };
 
 export const CurrentUserContext =

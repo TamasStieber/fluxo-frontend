@@ -8,6 +8,7 @@ const useCurrentUser = () => {
   const [isLoading, setLoading] = useState(true);
   const [isUpdating, setUpdating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const token = checkAuth();
   const toast = useToast();
@@ -29,7 +30,7 @@ const useCurrentUser = () => {
       setError(error as Error);
       setLoading(false);
     }
-  }, [token]);
+  }, [token, refreshTrigger]);
 
   const updateUser = (formData: FormData) => {
     setUpdating(true);
@@ -44,7 +45,7 @@ const useCurrentUser = () => {
         response.json().then((data) => {
           if (!data.error) {
             setCurrentUser(data);
-            setUpdating(false);
+            // setUpdating(false);
             toast({
               title: 'Profile updated successfully.',
               status: 'success',
@@ -56,11 +57,16 @@ const useCurrentUser = () => {
       )
       .catch((error) => {
         setError(error as Error);
-        setUpdating(true);
-      });
+        // setUpdating(false);
+      })
+      .finally(() => setUpdating(false));
   };
 
-  return { currentUser, isLoading, isUpdating, error, updateUser };
+  const refreshUser = () => {
+    setRefreshTrigger(!refreshTrigger);
+  };
+
+  return { currentUser, isLoading, isUpdating, error, updateUser, refreshUser };
 };
 
 export default useCurrentUser;

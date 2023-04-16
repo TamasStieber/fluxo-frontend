@@ -1,18 +1,19 @@
-import { User, Post } from '@/interfaces/interfaces';
+import { User } from '@/interfaces/interfaces';
 import { checkAuth } from '@/utils/utils';
 import { useEffect, useState } from 'react';
 
-const useSearch = (query: string) => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [posts, setPosts] = useState<Post[]>([]);
+const useUser = (username: string | string[] | undefined) => {
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   const token = checkAuth();
+
   useEffect(() => {
+    if (!username) return;
     try {
       setLoading(true);
-      fetch(`${process.env.BACKEND_URL}/search/${query}`, {
+      fetch(`${process.env.BACKEND_URL}/users/${username}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -20,8 +21,7 @@ const useSearch = (query: string) => {
         .then((response) => response.json())
         .then((data) => {
           if (!data.error) {
-            setUsers(data.users);
-            setPosts(data.posts);
+            setUser(data.user);
           }
           setLoading(false);
         });
@@ -29,9 +29,9 @@ const useSearch = (query: string) => {
       setError(error as Error);
       setLoading(false);
     }
-  }, [query, token]);
+  }, [username, token]);
 
-  return { users, posts, isLoading, error };
+  return { user, isLoading, error };
 };
 
-export default useSearch;
+export default useUser;

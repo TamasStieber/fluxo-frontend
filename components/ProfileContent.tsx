@@ -1,16 +1,18 @@
 import { ProfileContentProps } from '@/interfaces/props';
 import { Box, Text } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PostCard from './PostCard';
 import { checkAuth } from '@/utils/utils';
 import { Post } from '@/interfaces/interfaces';
-import { loggedInUser } from './PageContainer';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 const ProfileContent = ({ user }: ProfileContentProps) => {
+  const { currentUser } = useContext(CurrentUserContext);
+
   const token = checkAuth();
   const [posts, setPosts] = useState<Post[]>([]);
 
-  const subject = loggedInUser?._id === user?._id ? 'you' : user?.firstName;
+  const subject = currentUser?._id === user?._id ? 'you' : user?.firstName;
 
   useEffect(() => {
     if (!user) return;

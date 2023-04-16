@@ -6,36 +6,30 @@ import CreatePost from '@/components/CreatePost';
 import { Post } from '@/interfaces/interfaces';
 import { checkAuth } from '@/utils/utils';
 import { useState, useEffect } from 'react';
+import usePosts from '@/hooks/usePosts';
+import { Spinner } from '@chakra-ui/react';
 
 const Home = () => {
-  const token = checkAuth();
-  const [loading, setLoading] = useState(false);
-  const [posts, setPosts] = useState<Post[]>([]);
+  const {
+    posts,
+    isLoading,
+    isUpdating,
+    isCreating,
+    error,
+    createPost,
+    updatePost,
+    deletePost,
+    handleLikeClick,
+  } = usePosts();
 
-  const updatePosts = (post: Post) => {
-    setPosts([post, ...posts]);
-  };
+  if (isLoading) return <Spinner />;
 
-  useEffect(() => {
-    fetch(`${process.env.BACKEND_URL}/posts`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.length !== 0) {
-          if (JSON.stringify(data) !== JSON.stringify(posts)) setPosts(data);
-        }
-      });
-  }, [token, posts]);
+  if (error) return <div>An error occurred</div>;
 
   return (
     <MainWrapper>
       <PageContainer>
-        <CreatePost updatePosts={updatePosts} />
-
+        <CreatePost createPost={createPost} isCreating={isCreating} />
         <Feed posts={posts} />
       </PageContainer>
     </MainWrapper>

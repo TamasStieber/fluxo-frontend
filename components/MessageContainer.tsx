@@ -1,8 +1,8 @@
 import { Message, User } from '@/interfaces/interfaces';
-import { Flex, Text } from '@chakra-ui/react';
-import React from 'react';
-import { loggedInUser } from './PageContainer';
+import { Flex, Text, useColorModeValue } from '@chakra-ui/react';
+import React, { useContext } from 'react';
 import UserAvatar from './UserAvatar';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 interface MessageContainerProps {
   message: Message;
@@ -10,11 +10,16 @@ interface MessageContainerProps {
 }
 
 const MessageContainer = ({ message, partner }: MessageContainerProps) => {
-  const direction =
-    message.sender === loggedInUser?._id ? 'row-reverse' : 'row';
+  const { currentUser } = useContext(CurrentUserContext);
+
+  const currentUserBg = useColorModeValue('green.300', 'green.500');
+  const partnerBg = useColorModeValue('gray.100', 'gray.700');
+
+  const direction = message.sender === currentUser?._id ? 'row-reverse' : 'row';
   const bgColor =
-    message.sender === loggedInUser?._id ? 'blue.500' : 'green.500';
-  const user = message.sender === loggedInUser?._id ? loggedInUser : partner;
+    message.sender === currentUser?._id ? currentUserBg : partnerBg;
+
+  const user = message.sender === currentUser?._id ? currentUser : partner;
 
   return (
     <Flex justify='flex-start' flexDirection={direction} alignItems='flex-end'>

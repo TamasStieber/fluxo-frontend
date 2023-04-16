@@ -4,6 +4,7 @@ import {
   calculatePassedTime,
   checkAuth,
   getCurrentUserId,
+  redirectToProfile,
 } from '@/utils/utils';
 import {
   Avatar,
@@ -32,7 +33,6 @@ import { RxDotFilled } from 'react-icons/rx';
 import Likes from './Likes';
 import { useRouter } from 'next/router';
 import UserAvatar from './UserAvatar';
-import { loggedInUser } from './PageContainer';
 import FormattedPostContent from './FormattedPostContent';
 
 const PostCard = ({ post }: PostCardProps) => {
@@ -50,10 +50,6 @@ const PostCard = ({ post }: PostCardProps) => {
   const postContentLength = 200;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const redirectToProfile = () => {
-    router.push(`/users/${post.author._id}`);
-  };
 
   setInterval(() => {
     setTimeAgo(calculatePassedTime(creationDate));
@@ -130,7 +126,7 @@ const PostCard = ({ post }: PostCardProps) => {
               <Button
                 fontWeight='bold'
                 variant='link'
-                onClick={redirectToProfile}
+                onClick={() => redirectToProfile(post.author.userName)}
               >{`${post.author.firstName} ${post.author.lastName}`}</Button>
               <HStack spacing={0}>
                 <Text fontSize='xs'>{timeAgo}</Text>
@@ -178,7 +174,7 @@ const PostCard = ({ post }: PostCardProps) => {
             content={currentPost.content}
           />
         )}
-        <Likes currentUserId={currentUserId} post={post} />
+        <Likes post={post} />
       </Box>
       <OnDeleteModal
         isOpen={isOpen}

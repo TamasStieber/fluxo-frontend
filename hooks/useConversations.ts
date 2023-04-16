@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 const useConversations = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isLoading, setLoading] = useState(true);
-  const [isUpdating, setUpdating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
@@ -28,11 +27,11 @@ const useConversations = () => {
     }
   }, [token, refreshTrigger]);
 
-  const refresh = () => {
+  const refreshConversations = () => {
     setRefreshTrigger(!refreshTrigger);
   };
 
-  return { conversations, isLoading, isUpdating, error, refresh };
+  return { conversations, isLoading, error, refreshConversations };
 };
 
 export default useConversations;

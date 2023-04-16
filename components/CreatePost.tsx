@@ -1,65 +1,33 @@
 import { CreatePostProps } from '@/interfaces/props';
-import { checkAuth, getCurrentUserId } from '@/utils/utils';
-import {
-  Stack,
-  Input,
-  InputGroup,
-  InputRightElement,
-  Button,
-  Text,
-  HStack,
-  Box,
-  Flex,
-  Center,
-} from '@chakra-ui/react';
-import error from 'next/error';
-import { ChangeEvent, useRef, useState } from 'react';
-import { loggedInUser } from './PageContainer';
+import { Stack, Button, Text, Flex } from '@chakra-ui/react';
+import { ChangeEvent, useState, useContext, FormEvent } from 'react';
 import AutoResizeTextarea from './AutoResizeTextarea';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
-const CreatePost = ({ updatePosts }: CreatePostProps) => {
-  const token = checkAuth();
-  const contentRef = useRef<HTMLInputElement>(null);
+const CreatePost = ({ createPost, isCreating }: CreatePostProps) => {
+  const { currentUser } = useContext(CurrentUserContext);
   const [error, setError] = useState('');
   const [value, setValue] = useState('');
 
-  const placeHolder = `What's on your mind, ${
-    loggedInUser ? loggedInUser.firstName : ''
-  }?`;
+  const placeHolder = `What's on your mind, ${currentUser?.firstName}?`;
 
   const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     if (event.target.value !== '' && error !== '') setError('');
     setValue(event.target.value);
   };
 
-  const submitHandler = async (event: React.FormEvent) => {
+  const submitHandler = async (event: FormEvent) => {
     event.preventDefault();
+    if (!currentUser) return;
     if (value === '') return setError('Oops! You forgot to fill this field!');
     const postFormData = {
+      author: currentUser._id,
       content: value,
-      author: getCurrentUserId(),
     };
 
-    fetch(`${process.env.BACKEND_URL}/posts`, {
-      method: 'post',
-
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(postFormData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.error) setError(data.error);
-        else {
-          setValue('');
-          updatePosts(data);
-        }
-      })
-
-      .catch((error) => console.log(error));
+    createPost(postFormData);
   };
+
   return (
     <form onSubmit={(event) => submitHandler(event)}>
       <Stack>
@@ -69,7 +37,7 @@ const CreatePost = ({ updatePosts }: CreatePostProps) => {
           placeholder={placeHolder}
         />
         <Flex justifyContent='flex-end'>
-          <Button type='submit' colorScheme='green'>
+          <Button isLoading={isCreating} type='submit' colorScheme='green'>
             Post
           </Button>
         </Flex>

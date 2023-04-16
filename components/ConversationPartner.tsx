@@ -9,9 +9,9 @@ interface ConversationPartnerProps {
 
 const ConversationPartner = ({ user }: ConversationPartnerProps) => {
   return (
-    <HStack padding={2}>
+    <HStack>
       <UserAvatar user={user} size='sm' />
-      <Text fontWeight='bold'>{user.firstName + ' ' + user.lastName}</Text>
+      <Text>{user.firstName + ' ' + user.lastName}</Text>
     </HStack>
   );
 };

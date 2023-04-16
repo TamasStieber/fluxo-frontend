@@ -24,7 +24,7 @@ const SearchBar = () => {
           <Input
             ref={searchRef}
             variant='filled'
-            placeholder={`Search for people`}
+            placeholder={`Search for people or posts`}
           />
         </InputGroup>
       </form>

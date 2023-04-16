@@ -2,9 +2,12 @@ export interface User {
   _id: string;
   firstName: string;
   lastName: string;
+  fullName: string;
+  userName: string;
   email: string;
   createdAt: Date;
   profilePictureUrl: string;
+  friendRequests: string[];
   photosFolder: string;
   lastReadMessages: LastReadMessage[];
   posts: Post[];
@@ -42,4 +45,17 @@ export interface Conversation {
 export interface LastReadMessage {
   conversation: string;
   lastReadMessage: string;
+}
+
+export interface PostFormData {
+  author: string;
+  content: string;
+}
+
+export interface FriendRequest {
+  _id: string;
+  sender: string;
+  receiver: string;
+  status: 'pending' | 'accepted' | 'rejected';
+  createdAt: Date;
 }

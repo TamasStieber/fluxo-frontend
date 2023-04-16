@@ -7,6 +7,9 @@ import {
   HStack,
   Heading,
   Input,
+  InputGroup,
+  InputLeftAddon,
+  Spinner,
   Stack,
   Text,
   useToast,
@@ -19,17 +22,24 @@ import React, {
   useState,
 } from 'react';
 import UserAvatar from './UserAvatar';
-import { checkAuth } from '@/utils/utils';
+import { checkAuth, removeDiacritics } from '@/utils/utils';
 import useCurrentUser from '@/hooks/useCurrentUser';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import _ from 'lodash';
 
 const UserSettings = ({ user }: UserSettingsProps) => {
   const { currentUser, isLoading, isUpdating, error, updateUser } =
     useContext(CurrentUserContext);
   const userProfilePictureUrl = `${process.env.BACKEND_URL}/${currentUser?.photosFolder}/${currentUser?.profilePictureUrl}`;
+  const [isUsernameAvailable, setUserNameAvailable] = useState<boolean | null>(
+    null
+  );
+  const [isUserNameAvailabilityLoading, setUsernameAvailabilityLoading] =
+    useState(false);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const lastNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const userNameRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const oldPasswordRef = useRef<HTMLInputElement>(null);
   const newPasswordRef = useRef<HTMLInputElement>(null);
@@ -59,6 +69,7 @@ const UserSettings = ({ user }: UserSettingsProps) => {
       firstName: firstNameRef.current?.value,
       lastName: lastNameRef.current?.value,
       email: emailRef.current?.value,
+      userName: userNameRef?.current?.value,
     };
 
     updateFormData.append('data', JSON.stringify(formData));
@@ -112,6 +123,30 @@ const UserSettings = ({ user }: UserSettingsProps) => {
       .catch((error) => console.log(error));
   };
 
+  const checkUserNameAvailability = () => {
+    const userNameInput = userNameRef.current
+      ? _.toLower(removeDiacritics(userNameRef.current?.value))
+      : '';
+    if (userNameInput === currentUser?.userName) {
+      setUserNameAvailable(null);
+      return;
+    }
+    setUsernameAvailabilityLoading(true);
+    fetch(`${process.env.BACKEND_URL}/users/${userNameInput}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((response) =>
+        response.json().then((data) => {
+          if (data.error) setUserNameAvailable(true);
+          else setUserNameAvailable(false);
+        })
+      )
+      .catch((error) => console.log(error))
+      .finally(() => setUsernameAvailabilityLoading(false));
+  };
+
   return (
     <>
       <Heading>Profile Settings</Heading>
@@ -123,6 +158,23 @@ const UserSettings = ({ user }: UserSettingsProps) => {
         <form onSubmit={(event) => submitHandler(event)}>
           <Stack>
             <HStack spacing={10}>
+              <Stack spacing={4} paddingX={4} alignItems='center'>
+                <UserAvatar user={currentUser} size='2xl' url={avatar} />
+                <Button onClick={openFileBrowser}>Change Avatar</Button>
+                <input
+                  style={{ display: 'none' }}
+                  ref={fileInputRef}
+                  type='file'
+                  name='photo'
+                  id='photo'
+                  accept='image/*'
+                  onChange={(event) => {
+                    setAvatarThumbnail(event);
+                    // if (e.currentTarget.files)
+                    //   formik.setFieldValue('photo', e.currentTarget.files[0]);
+                  }}
+                />
+              </Stack>
               <Stack flexGrow={1}>
                 <HStack>
                   <Stack flexGrow={1}>
@@ -142,24 +194,30 @@ const UserSettings = ({ user }: UserSettingsProps) => {
                 </HStack>
                 <Text>Email</Text>
                 <Input ref={emailRef} defaultValue={currentUser?.email} />
-                <HStack justifyContent='flex-end'></HStack>
-              </Stack>
-              <Stack spacing={4} paddingX={4} alignItems='center'>
-                <UserAvatar user={currentUser} size='2xl' url={avatar} />
-                <Button onClick={openFileBrowser}>Change Avatar</Button>
-                <input
-                  style={{ display: 'none' }}
-                  ref={fileInputRef}
-                  type='file'
-                  name='photo'
-                  id='photo'
-                  accept='image/*'
-                  onChange={(event) => {
-                    setAvatarThumbnail(event);
-                    // if (e.currentTarget.files)
-                    //   formik.setFieldValue('photo', e.currentTarget.files[0]);
-                  }}
-                />
+                <Text>Username</Text>
+                <HStack justify='space-between'>
+                  <InputGroup maxW={500}>
+                    {/* eslint-disable-next-line react/no-children-prop */}
+                    <InputLeftAddon children='https://fluxo.vercel.app/' />
+                    <Input
+                      ref={userNameRef}
+                      defaultValue={currentUser?.userName}
+                      onChange={checkUserNameAvailability}
+                    />
+                  </InputGroup>
+                  {isUsernameAvailable !== null &&
+                    (isUserNameAvailabilityLoading ? (
+                      <Spinner />
+                    ) : (
+                      <Text
+                        color={isUsernameAvailable ? 'green.400' : 'red.400'}
+                      >
+                        {isUsernameAvailable
+                          ? 'Username is available'
+                          : 'Username is not available'}
+                      </Text>
+                    ))}
+                </HStack>
               </Stack>
             </HStack>
             <HStack justifyContent='flex-end'>

@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Post, User } from './interfaces';
+import { Post, PostFormData, User } from './interfaces';
 
 export interface MainWrapperProps {
   children: ReactNode;
@@ -14,7 +14,8 @@ export interface PageContainerProps {
 }
 
 export interface CreatePostProps {
-  updatePosts: (post: Post) => void;
+  createPost: (postFormData: PostFormData) => void;
+  isCreating: boolean;
 }
 
 export interface FeedProps {
@@ -31,7 +32,6 @@ export interface LikeProps {
 }
 
 export interface LikesProps {
-  currentUserId: string;
   post: Post;
 }
 

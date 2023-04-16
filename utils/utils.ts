@@ -1,3 +1,4 @@
+import router from 'next/router';
 import { destroyCookie, parseCookies } from 'nookies';
 
 export const checkAuth = () => {
@@ -44,4 +45,21 @@ export const calculatePassedTime = (creationDate: Date) => {
 const singularOrPlural = (count: number, word: string) => {
   if (count === 1) return word;
   return word + 's';
+};
+
+export const removeDiacritics = (string: string) => {
+  return string.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+};
+
+export const formatDate = (date: Date) => {
+  const options: Intl.DateTimeFormatOptions = {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  };
+  return date.toLocaleDateString('en-US', options);
+};
+
+export const redirectToProfile = (username: string | undefined) => {
+  username && router.push('/' + username);
 };
