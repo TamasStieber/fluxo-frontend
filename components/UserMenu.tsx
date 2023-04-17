@@ -23,6 +23,7 @@ import {
 import { useRouter } from 'next/router';
 import { CgProfile } from 'react-icons/cg';
 import { IoMdNotificationsOutline } from 'react-icons/io';
+import { FiUsers } from 'react-icons/fi';
 import {
   AiOutlineSetting,
   AiOutlineLogout,
@@ -34,6 +35,8 @@ import UserAvatar from './UserAvatar';
 import { useContext } from 'react';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import MessagesButton from './MessagesButton';
+import FriendRequest from './FriendRequest';
+import FriendRequestsMenu from './FriendRequestsMenu';
 
 const UserMenu = () => {
   const { currentUser } = useContext(CurrentUserContext);
@@ -49,6 +52,7 @@ const UserMenu = () => {
 
   return (
     <HStack justifyContent='flex-end' marginRight={2}>
+      <FriendRequestsMenu />
       <MessagesButton />
       <Box>
         <Menu closeOnSelect={false}>

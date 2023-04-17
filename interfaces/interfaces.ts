@@ -54,7 +54,7 @@ export interface PostFormData {
 
 export interface FriendRequest {
   _id: string;
-  sender: string;
+  sender: User;
   receiver: string;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;

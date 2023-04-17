@@ -3,7 +3,7 @@ import { checkAuth } from '@/utils/utils';
 import { useToast } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-const useFriendRequests = (user: User | null) => {
+const useFriendRequests = (user?: User | null) => {
   const [friendRequest, setFriendRequest] = useState<FriendRequest | null>(
     null
   );
@@ -15,8 +15,9 @@ const useFriendRequests = (user: User | null) => {
   const token = checkAuth();
 
   useEffect(() => {
+    if (!user) return;
     try {
-      fetch(`${process.env.BACKEND_URL}/friend-requests/${user?._id}`, {
+      fetch(`${process.env.BACKEND_URL}/friend-requests/receiver/${user._id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -30,7 +31,7 @@ const useFriendRequests = (user: User | null) => {
     } finally {
       setLoading(false);
     }
-  }, [token, user?._id]);
+  }, [token, user]);
 
   const sendFriendRequest = () => {
     setUpdating(true);
@@ -93,21 +94,18 @@ const useFriendRequests = (user: User | null) => {
     }
   };
 
-  const acceptFriendRequest = () => {
+  const acceptFriendRequest = (id: string) => {
     setUpdating(true);
     try {
-      fetch(
-        `${process.env.BACKEND_URL}/friend-requests/${friendRequest?._id}/accept`,
-        {
-          method: 'post',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      fetch(`${process.env.BACKEND_URL}/friend-requests/${id}/accept`, {
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
-          if (data.friendRequestToDelete) setFriendRequest(null);
+          return data;
         });
     } catch (error) {
       setError(error as Error);
@@ -116,21 +114,18 @@ const useFriendRequests = (user: User | null) => {
     }
   };
 
-  const rejectFriendRequest = () => {
+  const rejectFriendRequest = (id: string) => {
     setUpdating(true);
     try {
-      fetch(
-        `${process.env.BACKEND_URL}/friend-requests/${friendRequest?._id}/reject`,
-        {
-          method: 'post',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      fetch(`${process.env.BACKEND_URL}/friend-requests/${id}/reject`, {
+        method: 'post',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
         .then((response) => response.json())
         .then((data) => {
-          if (data.friendRequestToDelete) setFriendRequest(null);
+          return data;
         });
     } catch (error) {
       setError(error as Error);

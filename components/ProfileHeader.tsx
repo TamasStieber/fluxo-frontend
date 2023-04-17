@@ -1,6 +1,10 @@
 import { ProfileHeaderProps } from '@/interfaces/props';
 import { Avatar, Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
-import { AiOutlineUserAdd, AiOutlineEdit } from 'react-icons/ai';
+import {
+  AiOutlineUserAdd,
+  AiOutlineEdit,
+  AiOutlineUserDelete,
+} from 'react-icons/ai';
 import { IoMailOutline } from 'react-icons/io5';
 import UserAvatar from './UserAvatar';
 import { useRouter } from 'next/router';
@@ -60,7 +64,7 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
               <Button
                 isLoading={isUpdating}
                 onClick={cancelFriendRequest}
-                leftIcon={<AiOutlineUserAdd />}
+                leftIcon={<AiOutlineUserDelete />}
               >
                 Cancel friend request
               </Button>
