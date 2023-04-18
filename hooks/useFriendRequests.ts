@@ -1,12 +1,12 @@
 import { Conversation, FriendRequest, User } from '@/interfaces/interfaces';
 import { checkAuth } from '@/utils/utils';
 import { useToast } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
+import useCurrentUser from './useCurrentUser';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
-const useFriendRequests = (user?: User | null) => {
-  const [friendRequest, setFriendRequest] = useState<FriendRequest | null>(
-    null
-  );
+const useFriendRequests = () => {
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isUpdating, setUpdating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -15,25 +15,24 @@ const useFriendRequests = (user?: User | null) => {
   const token = checkAuth();
 
   useEffect(() => {
-    if (!user) return;
     try {
-      fetch(`${process.env.BACKEND_URL}/friend-requests/receiver/${user._id}`, {
+      fetch(`${process.env.BACKEND_URL}/friend-requests/user/current`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
         .then((response) => response.json())
         .then((data) => {
-          if (!data.error) setFriendRequest(data.friendRequest);
+          if (!data.error) setFriendRequests(data.friendRequests);
         });
     } catch (error) {
       setError(error as Error);
     } finally {
       setLoading(false);
     }
-  }, [token, user]);
+  }, [token]);
 
-  const sendFriendRequest = () => {
+  const sendFriendRequest = (receiver: User) => {
     setUpdating(true);
     try {
       fetch(`${process.env.BACKEND_URL}/friend-requests`, {
@@ -42,14 +41,14 @@ const useFriendRequests = (user?: User | null) => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ receiver: user?._id }),
+        body: JSON.stringify({ receiver: receiver._id }),
       })
         .then((response) => response.json())
         .then((data) => {
           if (!data.error) {
-            setFriendRequest(data.friendRequest);
+            setFriendRequests([data.friendRequest, ...friendRequests]);
             toast({
-              title: `A friend request has been sent to ${user?.firstName}`,
+              title: `A friend request has been sent to ${receiver.firstName}`,
               status: 'success',
               duration: 3000,
               isClosable: true,
@@ -63,13 +62,49 @@ const useFriendRequests = (user?: User | null) => {
     }
   };
 
-  const cancelFriendRequest = () => {
+  const cancelFriendRequest = (friendRequest: FriendRequest) => {
+    setUpdating(true);
+    try {
+      fetch(`${process.env.BACKEND_URL}/friend-requests/${friendRequest._id}`, {
+        method: 'delete',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.friendRequestToDelete) {
+            setFriendRequests(
+              friendRequests.filter(
+                (friendRequest) =>
+                  friendRequest._id !== data.friendRequestToDelete._id
+              )
+            );
+            toast({
+              title: `You have canceled the friend request to ${friendRequest.receiver.firstName}`,
+              status: 'success',
+              duration: 3000,
+              isClosable: true,
+            });
+          }
+        });
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const acceptFriendRequest = (
+    friendRequest: FriendRequest,
+    refreshUser: () => void
+  ) => {
     setUpdating(true);
     try {
       fetch(
-        `${process.env.BACKEND_URL}/friend-requests/${friendRequest?._id}`,
+        `${process.env.BACKEND_URL}/friend-requests/${friendRequest._id}/accept`,
         {
-          method: 'delete',
+          method: 'post',
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -77,10 +112,15 @@ const useFriendRequests = (user?: User | null) => {
       )
         .then((response) => response.json())
         .then((data) => {
-          if (data.friendRequestToDelete) {
-            setFriendRequest(null);
+          if (!data.error) {
+            setFriendRequests(
+              friendRequests.filter(
+                (friendRequest) => friendRequest._id !== friendRequest._id
+              )
+            );
+            refreshUser();
             toast({
-              title: `You have canceled the friend request to ${user?.firstName}`,
+              title: `You have accepted ${friendRequest.sender.firstName}'s friend request`,
               status: 'success',
               duration: 3000,
               isClosable: true,
@@ -94,38 +134,37 @@ const useFriendRequests = (user?: User | null) => {
     }
   };
 
-  const acceptFriendRequest = (id: string) => {
+  const rejectFriendRequest = (
+    friendRequest: FriendRequest,
+    refreshUser: () => void
+  ) => {
     setUpdating(true);
     try {
-      fetch(`${process.env.BACKEND_URL}/friend-requests/${id}/accept`, {
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      fetch(
+        `${process.env.BACKEND_URL}/friend-requests/${friendRequest._id}/reject`,
+        {
+          method: 'post',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
         .then((response) => response.json())
         .then((data) => {
-          return data;
-        });
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setUpdating(false);
-    }
-  };
-
-  const rejectFriendRequest = (id: string) => {
-    setUpdating(true);
-    try {
-      fetch(`${process.env.BACKEND_URL}/friend-requests/${id}/reject`, {
-        method: 'post',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          return data;
+          if (!data.error) {
+            setFriendRequests(
+              friendRequests.filter(
+                (friendRequest) => friendRequest._id !== friendRequest._id
+              )
+            );
+            refreshUser();
+            toast({
+              title: `You have rejected ${friendRequest.sender.firstName}'s friend request`,
+              status: 'success',
+              duration: 3000,
+              isClosable: true,
+            });
+          }
         });
     } catch (error) {
       setError(error as Error);
@@ -135,7 +174,7 @@ const useFriendRequests = (user?: User | null) => {
   };
 
   return {
-    friendRequest,
+    friendRequests,
     isLoading,
     isUpdating,
     error,

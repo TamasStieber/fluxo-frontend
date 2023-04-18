@@ -12,7 +12,7 @@ export interface User {
   lastReadMessages: LastReadMessage[];
   posts: Post[];
   likedPosts: Post[];
-  acquaintances: User[];
+  acquaintances: string[];
 }
 
 export interface Post {
@@ -55,7 +55,7 @@ export interface PostFormData {
 export interface FriendRequest {
   _id: string;
   sender: User;
-  receiver: string;
+  receiver: User;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
 }

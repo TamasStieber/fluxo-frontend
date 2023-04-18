@@ -11,17 +11,19 @@ import {
 import React, { useContext } from 'react';
 import { FiUsers } from 'react-icons/fi';
 import FriendRequest from './FriendRequest';
+import { FriendRequestsContext } from '@/contexts/FriendRequestsContext';
 
 const FriendRequestsMenu = () => {
-  const { currentUser, refreshUser } = useContext(CurrentUserContext);
+  const { currentUser } = useContext(CurrentUserContext);
+  const { friendRequests } = useContext(FriendRequestsContext);
 
   const backgroundColor = document.body
     ? window.getComputedStyle(document.body).backgroundColor
     : 'none';
 
-  const handleFriendRequestOperation = () => {
-    refreshUser();
-  };
+  const receivedFriendRequests = friendRequests.filter(
+    (friendRequest) => friendRequest.sender._id !== currentUser?._id
+  );
 
   if (!currentUser?.friendRequests) return null;
 
@@ -30,7 +32,7 @@ const FriendRequestsMenu = () => {
       <Menu closeOnSelect={false}>
         <MenuButton style={{ position: 'relative' }}>
           <Icon as={FiUsers} fontSize='1.5rem' marginTop={2} marginRight={2} />
-          {currentUser.friendRequests.length > 0 && (
+          {receivedFriendRequests.length > 0 && (
             <div
               style={{
                 position: 'absolute',
@@ -48,13 +50,10 @@ const FriendRequestsMenu = () => {
           )}
         </MenuButton>
         <MenuList>
-          {currentUser.friendRequests.length > 0 ? (
-            currentUser.friendRequests.map((friendRequest) => (
-              <MenuItem key={friendRequest}>
-                <FriendRequest
-                  id={friendRequest}
-                  onOperation={handleFriendRequestOperation}
-                />
+          {receivedFriendRequests.length > 0 ? (
+            receivedFriendRequests.map((friendRequest) => (
+              <MenuItem key={friendRequest._id}>
+                <FriendRequest friendRequest={friendRequest} />
               </MenuItem>
             ))
           ) : (

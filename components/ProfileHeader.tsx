@@ -1,5 +1,13 @@
 import { ProfileHeaderProps } from '@/interfaces/props';
-import { Avatar, Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
+import {
+  Avatar,
+  Box,
+  Button,
+  HStack,
+  Stack,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import {
   AiOutlineUserAdd,
   AiOutlineEdit,
@@ -10,36 +18,28 @@ import UserAvatar from './UserAvatar';
 import { useRouter } from 'next/router';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import { useContext, useEffect, useState } from 'react';
-import { checkAuth, formatDate } from '@/utils/utils';
+import { checkAuth, formatDate, redirectToProfile } from '@/utils/utils';
 import useFriendRequests from '@/hooks/useFriendRequests';
+import ProfileHeaderFriendRequests from './ProfileHeaderFriendRequests';
+import { FriendRequestsContext } from '@/contexts/FriendRequestsContext';
 
 const ProfileHeader = ({ user }: ProfileHeaderProps) => {
   const { currentUser } = useContext(CurrentUserContext);
-  const {
-    friendRequest,
-    isLoading,
-    isUpdating,
-    error,
-    sendFriendRequest,
-    cancelFriendRequest,
-  } = useFriendRequests(user);
   const router = useRouter();
 
   const date = user && new Date(user.createdAt);
 
   const isAcquaintance = currentUser?.acquaintances.find(
-    (acquaintance) => acquaintance.email === user?.email
+    (acquaintance) => acquaintance === user?._id
   );
   const sameUser = currentUser?.email === user?.email && true;
-
-  // const isFriendRequestPending = friendRequests.find(
-  //   (friendRequest) => friendRequest.receiver === user?._id
-  // );
 
   const handleSendMessage = () => {
     localStorage.setItem('userToMessage', JSON.stringify(user));
     router.push('/messages');
   };
+
+  if (!user) return null;
 
   return (
     <Box marginY={2} borderRadius='10px'>
@@ -57,41 +57,24 @@ const ProfileHeader = ({ user }: ProfileHeaderProps) => {
           }`}</Text>
         </Stack>
       </HStack>
-      <HStack marginTop={4}>
+      <VStack marginTop={4} align='flex-start'>
         {!sameUser && !isAcquaintance && (
-          <>
-            {friendRequest ? (
-              <Button
-                isLoading={isUpdating}
-                onClick={cancelFriendRequest}
-                leftIcon={<AiOutlineUserDelete />}
-              >
-                Cancel friend request
-              </Button>
-            ) : (
-              <Button
-                isLoading={isUpdating}
-                onClick={sendFriendRequest}
-                leftIcon={<AiOutlineUserAdd />}
-              >
-                Send friend request
-              </Button>
-            )}
-            <Button leftIcon={<IoMailOutline />} onClick={handleSendMessage}>
-              {`Message ${user?.firstName}`}
-            </Button>
-          </>
+          <ProfileHeaderFriendRequests user={user} />
+        )}
+        {!sameUser && (
+          <Button leftIcon={<IoMailOutline />} onClick={handleSendMessage}>
+            {`Message ${user?.firstName}`}
+          </Button>
         )}
         {sameUser && (
           <Button
-            marginTop={4}
             leftIcon={<AiOutlineEdit />}
             onClick={() => router.push('/settings')}
           >
             Edit Profile
           </Button>
         )}
-      </HStack>
+      </VStack>
     </Box>
   );
 };

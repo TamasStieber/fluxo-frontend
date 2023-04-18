@@ -1,7 +1,7 @@
 import { ConversationsContext } from '@/contexts/ConversationsContext';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import { logout, getCurrentUserId } from '@/utils/utils';
-import { IconButton } from '@chakra-ui/react';
+import { Button, Icon, IconButton } from '@chakra-ui/react';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 import { IoMailOutline } from 'react-icons/io5';
@@ -34,13 +34,37 @@ const MessagesButton = () => {
   }
 
   return (
-    <div style={{ position: 'relative' }}>
-      <IconButton
-        variant='ghost'
-        aria-label='Messages'
-        icon={<IoMailOutline fontSize='1.5rem' />}
-        onClick={redirectToMessages}
-      />
+    // <div style={{ position: 'relative' }}>
+    //   <IconButton
+    //     variant='ghost'
+    //     aria-label='Messages'
+    //     icon={<IoMailOutline fontSize='1.5rem' />}
+    //     onClick={redirectToMessages}
+    //   />
+    //   {unreadCount > 0 && (
+    //     <div
+    //       style={{
+    //         position: 'absolute',
+    //         top: '5px',
+    //         right: '5px',
+    //         boxSizing: 'content-box',
+    //         width: '7px',
+    //         height: '7px',
+    //         borderRadius: '100%',
+    //         border: '3px solid',
+    //         borderColor: backgroundColor,
+    //         backgroundColor: 'red',
+    //       }}
+    //     ></div>
+    //   )}
+    // </div>
+    <Button
+      variant='ghost'
+      position='relative'
+      onClick={redirectToMessages}
+      _hover={{ backgroundColor: 'transparent' }}
+    >
+      <Icon as={IoMailOutline} fontSize='1.5rem' />
       {unreadCount > 0 && (
         <div
           style={{
@@ -57,7 +81,7 @@ const MessagesButton = () => {
           }}
         ></div>
       )}
-    </div>
+    </Button>
   );
 };
 

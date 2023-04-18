@@ -1,64 +1,48 @@
 import { FriendRequest } from '@/interfaces/interfaces';
 import { checkAuth, redirectToProfile } from '@/utils/utils';
-import { Box, Button, HStack, Stack, Text } from '@chakra-ui/react';
-import React, { useEffect, useState } from 'react';
+import { Box, Button, HStack, Link, Stack, Text } from '@chakra-ui/react';
+import React, { useContext } from 'react';
 import UserAvatar from './UserAvatar';
-import useFriendRequests from '@/hooks/useFriendRequests';
+import { FriendRequestsContext } from '@/contexts/FriendRequestsContext';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 interface FriendRequestProps {
-  id: string;
-  onOperation: () => void;
+  friendRequest: FriendRequest;
 }
 
-const FriendRequest = ({ id, onOperation }: FriendRequestProps) => {
-  const [friendRequest, setFriendRequest] = useState<FriendRequest | null>(
-    null
+const FriendRequest = ({ friendRequest }: FriendRequestProps) => {
+  const { refreshUser } = useContext(CurrentUserContext);
+  const { acceptFriendRequest, rejectFriendRequest } = useContext(
+    FriendRequestsContext
   );
-  const { acceptFriendRequest, rejectFriendRequest } = useFriendRequests();
 
   const token = checkAuth();
-
-  const handleAcceptFriendRequest = () => {
-    acceptFriendRequest(id);
-    onOperation();
-  };
-
-  const handleRejectFriendRequest = () => {
-    rejectFriendRequest(id);
-    onOperation();
-  };
-
-  useEffect(() => {
-    try {
-      fetch(`${process.env.BACKEND_URL}/friend-requests/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (!data.error) setFriendRequest(data.friendRequest);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  }, [id, token]);
-
-  if (!friendRequest) return null;
 
   return (
     <Stack>
       <HStack>
         <UserAvatar user={friendRequest.sender} size='sm' />
-        <Text>{`${friendRequest.sender.firstName} ${friendRequest.sender.lastName} has sent you a friend request`}</Text>
+        <Text>
+          <Link
+            fontWeight='bold'
+            onClick={() => redirectToProfile(friendRequest.sender.userName)}
+          >{`${friendRequest.sender.firstName} ${friendRequest.sender.lastName}`}</Link>{' '}
+          has sent you a friend request
+        </Text>
       </HStack>
       <HStack justify='flex-end'>
         <Button
-          onClick={handleAcceptFriendRequest}
+          onClick={() => acceptFriendRequest(friendRequest, refreshUser)}
           colorScheme='green'
           size='sm'
         >
           Accept
         </Button>
-        <Button onClick={handleRejectFriendRequest} variant='outline' size='sm'>
+        <Button
+          onClick={() => rejectFriendRequest(friendRequest, refreshUser)}
+          variant='outline'
+          size='sm'
+        >
           Reject
         </Button>
       </HStack>
