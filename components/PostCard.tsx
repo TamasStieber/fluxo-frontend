@@ -146,7 +146,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 aria-label='Edit Post'
                 _hover={{ color: 'blue.400' }}
                 icon={<AiOutlineEdit fontSize='1.2rem' />}
-                onClick={() => setEditMode(!editMode)}
+                onClick={() => setEditMode(true)}
               />
             )}
             {currentUserId === post.author._id && (
@@ -166,6 +166,7 @@ const PostCard = ({ post }: PostCardProps) => {
               ref={contentEditRef}
               defaultValue={post.content}
               autoFocus={editMode}
+              onBlur={() => setEditMode(false)}
             />
           </form>
         ) : (
