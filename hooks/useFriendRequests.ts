@@ -1,15 +1,14 @@
-import { Conversation, FriendRequest, User } from '@/interfaces/interfaces';
+import { FriendRequest, User } from '@/interfaces/interfaces';
 import { checkAuth } from '@/utils/utils';
 import { useToast } from '@chakra-ui/react';
-import { useContext, useEffect, useState } from 'react';
-import useCurrentUser from './useCurrentUser';
-import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import { useEffect, useState } from 'react';
 
 const useFriendRequests = () => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isUpdating, setUpdating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
   const toast = useToast();
 
   const token = checkAuth();
@@ -30,7 +29,7 @@ const useFriendRequests = () => {
     } finally {
       setLoading(false);
     }
-  }, [token]);
+  }, [token, refreshTrigger]);
 
   const sendFriendRequest = (receiver: User) => {
     setUpdating(true);
@@ -113,12 +112,13 @@ const useFriendRequests = () => {
         .then((response) => response.json())
         .then((data) => {
           if (!data.error) {
-            setFriendRequests(
-              friendRequests.filter(
-                (friendRequest) => friendRequest._id !== friendRequest._id
-              )
-            );
+            // setFriendRequests(
+            //   friendRequests.filter(
+            //     (friendRequest) => friendRequest._id !== friendRequest._id
+            //   )
+            // );
             refreshUser();
+            refreshFriendRequests();
             toast({
               title: `You have accepted ${friendRequest.sender.firstName}'s friend request`,
               status: 'success',
@@ -152,12 +152,13 @@ const useFriendRequests = () => {
         .then((response) => response.json())
         .then((data) => {
           if (!data.error) {
-            setFriendRequests(
-              friendRequests.filter(
-                (friendRequest) => friendRequest._id !== friendRequest._id
-              )
-            );
+            // setFriendRequests(
+            //   friendRequests.filter(
+            //     (friendRequest) => friendRequest._id !== friendRequest._id
+            //   )
+            // );
             refreshUser();
+            refreshFriendRequests();
             toast({
               title: `You have rejected ${friendRequest.sender.firstName}'s friend request`,
               status: 'success',
@@ -171,6 +172,10 @@ const useFriendRequests = () => {
     } finally {
       setUpdating(false);
     }
+  };
+
+  const refreshFriendRequests = () => {
+    setRefreshTrigger(!refreshTrigger);
   };
 
   return {

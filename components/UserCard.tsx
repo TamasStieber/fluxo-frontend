@@ -15,7 +15,7 @@ const UserCard = ({ user }: UserCardProps) => {
 
   return (
     <HStack marginY={4}>
-      <UserAvatar user={user} size='lg' />
+      <UserAvatar user={user} size='lg' clickable />
       <Stack spacing={0} alignItems='flex-start'>
         <Button
           variant='link'
@@ -25,7 +25,7 @@ const UserCard = ({ user }: UserCardProps) => {
           {user.firstName + ' ' + user.lastName}
         </Button>
         <Text color='gray.400' fontSize='lg'>
-          {user.email}
+          {user.userName}
         </Text>
         <Text color='gray.400' fontSize='md'>{`Member since ${formatDate(
           date

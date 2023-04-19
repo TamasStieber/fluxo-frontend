@@ -59,6 +59,8 @@ export interface UserAvatarProps {
   user: User | null;
   size?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
   url?: string;
+  clickable?: boolean;
+  tooltip?: boolean;
 }
 
 export interface SearchProps {

@@ -1,10 +1,20 @@
 import { ProfileContentProps } from '@/interfaces/props';
-import { Box, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Grid,
+  GridItem,
+  Link,
+  SimpleGrid,
+  Text,
+  Tooltip,
+} from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 import PostCard from './PostCard';
 import { checkAuth } from '@/utils/utils';
 import { Post } from '@/interfaces/interfaces';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import FriendsBox from './FriendsBox';
 
 const ProfileContent = ({ user }: ProfileContentProps) => {
   const { currentUser } = useContext(CurrentUserContext);
@@ -12,7 +22,9 @@ const ProfileContent = ({ user }: ProfileContentProps) => {
   const token = checkAuth();
   const [posts, setPosts] = useState<Post[]>([]);
 
-  const subject = currentUser?._id === user?._id ? 'you' : user?.firstName;
+  const sameUser = currentUser?.email === user?.email && true;
+
+  const subject = sameUser ? 'you' : user?.firstName;
 
   useEffect(() => {
     if (!user) return;
@@ -33,12 +45,27 @@ const ProfileContent = ({ user }: ProfileContentProps) => {
   }, [token, user]);
 
   return (
-    <Box marginTop={4}>
-      <Text fontSize='xl'>Posts by {subject}</Text>
-      {posts.map((post) => (
-        <PostCard key={post._id} post={post} />
-      ))}
-    </Box>
+    <Grid
+      marginTop={4}
+      templateColumns={{
+        base: '1fr',
+        lg: '230px auto',
+      }}
+    >
+      <GridItem>
+        <Box boxShadow='md' padding={2}>
+          <FriendsBox user={user} />
+        </Box>
+      </GridItem>
+      <GridItem>
+        <Box padding={2}>
+          <Text fontSize='xl'>Posts by {subject}</Text>
+          {posts.map((post) => (
+            <PostCard key={post._id} post={post} />
+          ))}
+        </Box>
+      </GridItem>
+    </Grid>
   );
 };
 

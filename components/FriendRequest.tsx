@@ -21,7 +21,7 @@ const FriendRequest = ({ friendRequest }: FriendRequestProps) => {
   return (
     <Stack>
       <HStack>
-        <UserAvatar user={friendRequest.sender} size='sm' />
+        <UserAvatar user={friendRequest.sender} size='sm' clickable={true} />
         <Text>
           <Link
             fontWeight='bold'
