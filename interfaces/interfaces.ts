@@ -12,6 +12,8 @@ export interface User {
   lastReadMessages: LastReadMessage[];
   posts: Post[];
   likedPosts: Post[];
+  comments: string[];
+  likedComments: string[];
   acquaintances: string[];
 }
 
@@ -22,7 +24,8 @@ export interface Post {
   createdAt: Date;
   contentUpdated: Date;
   updatedAt: Date;
-  //   comments: mongoose.Types.ObjectId[];
+  comments: string[];
+  commentsCount: number;
   likes: User[];
 }
 
@@ -58,4 +61,16 @@ export interface FriendRequest {
   receiver: User;
   status: 'pending' | 'accepted' | 'rejected';
   createdAt: Date;
+}
+
+export interface Comment {
+  _id: string;
+  post: string;
+  author: User;
+  content: string;
+  replies: Comment[];
+  repliesCount: number;
+  replyTo: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }

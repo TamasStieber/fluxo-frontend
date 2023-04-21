@@ -63,10 +63,10 @@ const AllFriendsModal = ({
         <ModalHeader>{`${firstName}'s friends`}</ModalHeader>
         <ModalCloseButton />
         <ModalBody overflowY='auto' maxHeight='70vh'>
-          <Tabs isFitted variant='enclosed'>
+          <Tabs isFitted variant='line'>
             <TabList mb='1em'>
-              <Tab>{`All ${acquaintances.length}`}</Tab>
-              {!sameUser && <Tab>{`Commmon ${commonFriends.length}`}</Tab>}
+              <Tab>{`All (${acquaintances.length})`}</Tab>
+              {!sameUser && <Tab>{`Commmon (${commonFriends.length})`}</Tab>}
             </TabList>
             <TabPanels>
               <TabPanel>

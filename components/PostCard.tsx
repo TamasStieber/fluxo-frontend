@@ -34,6 +34,7 @@ import Likes from './Likes';
 import { useRouter } from 'next/router';
 import UserAvatar from './UserAvatar';
 import FormattedPostContent from './FormattedPostContent';
+import Comments from './Comments';
 
 const PostCard = ({ post }: PostCardProps) => {
   const creationDate = new Date(post.createdAt);
@@ -176,6 +177,7 @@ const PostCard = ({ post }: PostCardProps) => {
           />
         )}
         <Likes post={post} />
+        <Comments postId={post._id} commentsCount={post.comments.length} />
       </Box>
       <OnDeleteModal
         isOpen={isOpen}
