@@ -31,6 +31,8 @@ const Comment = ({ comment }: CommentProps) => {
   const [show, setShow] = useState(false);
   const [reply, setReply] = useState('');
 
+  const isCurrentUserAuthor = currentUser?._id === comment.author._id;
+
   const submitReply = (event: FormEvent) => {
     event.preventDefault();
 
@@ -55,6 +57,7 @@ const Comment = ({ comment }: CommentProps) => {
           <Button
             variant='link'
             width='auto'
+            colorScheme={isCurrentUserAuthor ? 'green' : 'gray'}
             onClick={() => redirectToProfile(comment.author.userName)}
           >
             {comment.author.fullName}

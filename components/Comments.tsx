@@ -1,21 +1,9 @@
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import useComments from '@/hooks/useComments';
-import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Input,
-  VStack,
-} from '@chakra-ui/react';
-import { FormEvent, useRef, useContext } from 'react';
+import { Box, Button, Collapse, Flex, HStack, Input } from '@chakra-ui/react';
+import { FormEvent, useRef, useContext, useState } from 'react';
 import Comment from './Comment';
-import { BiComment } from 'react-icons/bi';
+import { BiComment, BiShare } from 'react-icons/bi';
 
 interface CommentsProps {
   postId: string;
@@ -27,6 +15,9 @@ const Comments = ({ postId, commentsCount }: CommentsProps) => {
     useComments(postId);
   const { currentUser } = useContext(CurrentUserContext);
   const commentRef = useRef<HTMLInputElement>(null);
+  const [show, setShow] = useState(false);
+
+  const handleToggleComments = () => setShow(!show);
 
   const submitComment = (event: FormEvent) => {
     event.preventDefault();
@@ -37,47 +28,43 @@ const Comments = ({ postId, commentsCount }: CommentsProps) => {
 
   return (
     <>
-      <Accordion allowMultiple border='transparent'>
-        <AccordionItem>
-          <Flex justifyContent='center'>
+      <Flex justifyContent='space-evenly'>
+        <Button
+          onClick={handleToggleComments}
+          variant='ghost'
+          width='auto'
+          leftIcon={<BiComment />}
+        >
+          {`Comments (${count})`}
+        </Button>
+        <Button variant='ghost' width='auto' leftIcon={<BiShare />}>
+          Share
+        </Button>
+      </Flex>
+      <Collapse in={show}>
+        <Box marginBottom={2}>
+          {comments.map((comment) => (
+            <Comment key={comment._id} comment={comment} />
+          ))}
+          {commentsCount > skip && (
             <Button
-              as={AccordionButton}
-              variant='ghost'
-              width='auto'
-              leftIcon={<BiComment />}
+              variant='link'
+              colorScheme='blue'
+              onClick={loadMoreComments}
             >
-              {`Comments (${count})`}
+              Load more comments
             </Button>
-          </Flex>
-          <AccordionPanel padding={0}>
-            <Box marginBottom={2}>
-              {comments.map((comment) => (
-                <Comment key={comment._id} comment={comment} />
-              ))}
-              {commentsCount > skip && (
-                <Button
-                  variant='link'
-                  colorScheme='blue'
-                  onClick={loadMoreComments}
-                >
-                  Load more comments
-                </Button>
-              )}
-            </Box>
-            <form onSubmit={(event) => submitComment(event)}>
-              <HStack>
-                <Input
-                  ref={commentRef}
-                  placeholder='Write your comment'
-                ></Input>
-                <Button colorScheme='green' type='submit'>
-                  Comment
-                </Button>
-              </HStack>
-            </form>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
+          )}
+        </Box>
+        <form onSubmit={(event) => submitComment(event)}>
+          <HStack>
+            <Input ref={commentRef} placeholder='Write your comment'></Input>
+            <Button colorScheme='green' type='submit'>
+              Comment
+            </Button>
+          </HStack>
+        </form>
+      </Collapse>
     </>
   );
 };

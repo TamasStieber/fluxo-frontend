@@ -18,9 +18,10 @@ const TextWithLinks = ({ text }: TextWithLinksProps) => {
         <div key={index}>
           {line.split(/\s+/).map((word, index) => {
             if (regex.test(word)) {
+              const href = word.includes('http') ? word : 'http://' + word;
               return (
                 <>
-                  <Link key={index} href={word} textColor={color} isExternal>
+                  <Link key={index} href={href} textColor={color} isExternal>
                     {word}
                   </Link>{' '}
                 </>

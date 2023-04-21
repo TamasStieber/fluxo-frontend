@@ -27,7 +27,7 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { FormEvent, useRef, useState } from 'react';
+import React, { FormEvent, useContext, useRef, useState } from 'react';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { RxDotFilled } from 'react-icons/rx';
 import Likes from './Likes';
@@ -35,22 +35,25 @@ import { useRouter } from 'next/router';
 import UserAvatar from './UserAvatar';
 import FormattedPostContent from './FormattedPostContent';
 import Comments from './Comments';
+import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 const PostCard = ({ post }: PostCardProps) => {
   const creationDate = new Date(post.createdAt);
+  const { currentUser } = useContext(CurrentUserContext);
   const [timeAgo, setTimeAgo] = useState(calculatePassedTime(creationDate));
   const [isHidden, setHidden] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [editMode, setEditMode] = useState(false);
   const contentEditRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
-  const currentUserId = getCurrentUserId();
+  // const currentUserId = getCurrentUserId();
   const isEdited = currentPost.contentUpdated && true;
   const token = checkAuth();
 
   const postContentLength = 200;
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const isCurrentUserAuthor = currentUser?._id === post.author._id;
 
   setInterval(() => {
     setTimeAgo(calculatePassedTime(creationDate));
@@ -127,8 +130,11 @@ const PostCard = ({ post }: PostCardProps) => {
               <Button
                 fontWeight='bold'
                 variant='link'
+                colorScheme={isCurrentUserAuthor ? 'green' : 'gray'}
                 onClick={() => redirectToProfile(post.author.userName)}
-              >{`${post.author.firstName} ${post.author.lastName}`}</Button>
+              >
+                {post.author.fullName}
+              </Button>
               <HStack spacing={0}>
                 <Text fontSize='xs'>{timeAgo}</Text>
                 {isEdited && (
@@ -141,7 +147,7 @@ const PostCard = ({ post }: PostCardProps) => {
             </Stack>
           </HStack>
           <HStack spacing={0}>
-            {currentUserId === post.author._id && (
+            {isCurrentUserAuthor && (
               <IconButton
                 variant='ghost'
                 aria-label='Edit Post'
@@ -150,7 +156,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 onClick={() => setEditMode(true)}
               />
             )}
-            {currentUserId === post.author._id && (
+            {isCurrentUserAuthor && (
               <IconButton
                 variant='ghost'
                 aria-label='Delete Post'
