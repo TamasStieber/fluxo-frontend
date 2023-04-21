@@ -1,7 +1,7 @@
-import { Conversation, Message, User } from '@/interfaces/interfaces';
+import { Conversation, IMessage, User } from '@/interfaces/interfaces';
 import { Box, HStack, Heading, Stack, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import MessageContainer from './MessageContainer';
+import Message from './Message';
 import { checkAuth, getCurrentUserId } from '@/utils/utils';
 
 interface ConversationProps {
@@ -49,11 +49,7 @@ const Conversation = ({ conversation, newPartner }: ConversationProps) => {
         maxHeight={700}
       >
         {conversation.messages.map((message) => (
-          <MessageContainer
-            key={message._id}
-            message={message}
-            partner={partner}
-          />
+          <Message key={message._id} message={message} partner={partner} />
         ))}
       </Stack>
     </Stack>

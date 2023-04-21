@@ -19,6 +19,7 @@ import { Comment } from '@/interfaces/interfaces';
 import { calculatePassedTime, redirectToProfile } from '@/utils/utils';
 import useReplies from '@/hooks/useReplies';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import TextWithLinks from './TextWithLinks';
 
 interface CommentProps {
   comment: Comment;
@@ -59,7 +60,9 @@ const Comment = ({ comment }: CommentProps) => {
             {comment.author.fullName}
           </Button>
           <Text fontSize='xs'>{calculatePassedTime(date)}</Text>
-          <Text marginY={2}>{comment.content}</Text>
+          <Text marginY={2}>
+            <TextWithLinks text={comment.content} />
+          </Text>
           <HStack display={show ? 'none' : 'flex'} justifyContent='flex-start'>
             <Button
               size='sm'

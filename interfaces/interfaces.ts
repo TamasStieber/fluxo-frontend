@@ -29,7 +29,7 @@ export interface Post {
   likes: User[];
 }
 
-export interface Message {
+export interface IMessage {
   _id: string;
   sender: string;
   receiver: string;
@@ -41,8 +41,8 @@ export interface Message {
 export interface Conversation {
   _id: string;
   participants: User[];
-  messages: Message[];
-  lastMessage: Message;
+  messages: IMessage[];
+  lastMessage: IMessage;
 }
 
 export interface LastReadMessage {

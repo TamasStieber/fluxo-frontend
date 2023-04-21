@@ -3,7 +3,7 @@ import MainWrapper from '@/components/MainWrapper';
 import { useContext, useEffect, useState, FormEvent, useRef } from 'react';
 import {
   Conversation as IConversation,
-  Message,
+  IMessage,
   User,
 } from '@/interfaces/interfaces';
 import { checkAuth, getCurrentUserId } from '@/utils/utils';

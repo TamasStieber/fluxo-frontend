@@ -1,6 +1,7 @@
 import { FormattedPostContentProps } from '@/interfaces/props';
 import { Box, Button, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
+import TextWithLinks from './TextWithLinks';
 
 const FormattedPostContent = ({
   length,
@@ -31,7 +32,8 @@ const FormattedPostContent = ({
     <>
       <Box ref={contentTextRef}>
         <Text whiteSpace='pre-wrap' display='inline' marginTop={4}>
-          {formattedText}
+          {/* {formattedText} */}
+          <TextWithLinks text={formattedText} />
         </Text>
       </Box>
       {isTooLong && (
