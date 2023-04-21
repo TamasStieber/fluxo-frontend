@@ -27,7 +27,13 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import React, { FormEvent, useContext, useRef, useState } from 'react';
+import React, {
+  FormEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { AiOutlineEdit, AiOutlineDelete } from 'react-icons/ai';
 import { RxDotFilled } from 'react-icons/rx';
 import Likes from './Likes';
@@ -38,9 +44,11 @@ import Comments from './Comments';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 
 const PostCard = ({ post }: PostCardProps) => {
-  const creationDate = new Date(post.createdAt);
+  // const creationDate = new Date(post.createdAt);
   const { currentUser } = useContext(CurrentUserContext);
-  const [timeAgo, setTimeAgo] = useState(calculatePassedTime(creationDate));
+  const [timeAgo, setTimeAgo] = useState(
+    calculatePassedTime(new Date(post.createdAt))
+  );
   const [isHidden, setHidden] = useState(false);
   const [currentPost, setCurrentPost] = useState(post);
   const [editMode, setEditMode] = useState(false);
@@ -54,10 +62,6 @@ const PostCard = ({ post }: PostCardProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isCurrentUserAuthor = currentUser?._id === post.author._id;
-
-  setInterval(() => {
-    setTimeAgo(calculatePassedTime(creationDate));
-  }, 1000 * 60);
 
   const handleUpdate = (event: FormEvent) => {
     event.preventDefault();
@@ -109,6 +113,15 @@ const PostCard = ({ post }: PostCardProps) => {
   // if (editMode && event.target !== contentEditRef.current)
   // setEditMode(!editMode);
   // this.removeEventListener('click', this)
+
+  useEffect(() => {
+    const creationDate = new Date(post.createdAt);
+    const intervalId = setInterval(() => {
+      setTimeAgo(calculatePassedTime(creationDate));
+    }, 1000 * 60);
+
+    return () => clearInterval(intervalId);
+  }, [post.createdAt]);
 
   return (
     <>
