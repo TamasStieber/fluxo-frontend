@@ -18,10 +18,6 @@ export interface CreatePostProps {
   isCreating: boolean;
 }
 
-export interface FeedProps {
-  posts: Post[];
-}
-
 export interface PostCardProps {
   post: Post;
 }

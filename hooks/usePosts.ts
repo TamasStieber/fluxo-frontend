@@ -60,9 +60,7 @@ const usePosts = (userId?: string) => {
     }
   };
 
-  const updatePost = (post: Post) => {
-    setPosts([post, ...posts]);
-  };
+  const updatePost = (formData: FormData) => {};
 
   const deletePost = () => {};
 

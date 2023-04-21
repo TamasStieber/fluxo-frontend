@@ -183,6 +183,7 @@ const PostCard = ({ post }: PostCardProps) => {
           />
         )}
         <Likes post={post} />
+        <Divider marginTop={4} />
         <Comments postId={post._id} commentsCount={post.comments.length} />
       </Box>
       <OnDeleteModal

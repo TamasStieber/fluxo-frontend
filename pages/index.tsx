@@ -30,7 +30,15 @@ const Home = () => {
     <MainWrapper>
       <PageContainer>
         <CreatePost createPost={createPost} isCreating={isCreating} />
-        <Feed posts={posts} />
+        <Feed
+          posts={posts}
+          isLoading={isLoading}
+          isUpdating={isUpdating}
+          error={error}
+          updatePost={updatePost}
+          deletePost={deletePost}
+          handleLikeClick={handleLikeClick}
+        />
       </PageContainer>
     </MainWrapper>
   );
