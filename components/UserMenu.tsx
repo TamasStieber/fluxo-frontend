@@ -23,19 +23,12 @@ import {
 import { useRouter } from 'next/router';
 import { CgProfile } from 'react-icons/cg';
 import { IoMdNotificationsOutline } from 'react-icons/io';
-import { FiUsers } from 'react-icons/fi';
-import {
-  AiOutlineSetting,
-  AiOutlineLogout,
-  AiOutlineMessage,
-} from 'react-icons/ai';
+import { AiOutlineSetting, AiOutlineLogout } from 'react-icons/ai';
 import ColorModeSwitch from './ColorModeSwitch';
-// import { loggedInUser } from './PageContainer';
 import UserAvatar from './UserAvatar';
 import { useContext } from 'react';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import MessagesButton from './MessagesButton';
-import FriendRequest from './FriendRequest';
 import FriendRequestsMenu from './FriendRequestsMenu';
 
 const UserMenu = () => {

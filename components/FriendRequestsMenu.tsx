@@ -9,7 +9,7 @@ import {
   MenuList,
 } from '@chakra-ui/react';
 import React, { useContext } from 'react';
-import { FiUsers } from 'react-icons/fi';
+import { AiOutlineUsergroupAdd } from 'react-icons/ai';
 import FriendRequest from './FriendRequest';
 import { FriendRequestsContext } from '@/contexts/FriendRequestsContext';
 
@@ -31,7 +31,12 @@ const FriendRequestsMenu = () => {
     <Box>
       <Menu closeOnSelect={false}>
         <MenuButton style={{ position: 'relative' }}>
-          <Icon as={FiUsers} fontSize='1.5rem' marginTop={2} marginRight={2} />
+          <Icon
+            as={AiOutlineUsergroupAdd}
+            fontSize='1.5rem'
+            marginTop={2}
+            marginRight={2}
+          />
           {receivedFriendRequests.length > 0 && (
             <div
               style={{
