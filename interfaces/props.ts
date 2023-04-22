@@ -67,3 +67,8 @@ export interface FormattedPostContentProps {
   length: number;
   content: Post['content'];
 }
+
+export enum CreatePostModalOptions {
+  Text = 'text',
+  Photos = 'photos',
+}

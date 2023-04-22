@@ -15,34 +15,15 @@ import { checkAuth } from '@/utils/utils';
 import { Post } from '@/interfaces/interfaces';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
 import FriendsBox from './FriendsBox';
+import usePosts from '@/hooks/usePosts';
 
 const ProfileContent = ({ user }: ProfileContentProps) => {
   const { currentUser } = useContext(CurrentUserContext);
-
-  const token = checkAuth();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const { posts } = usePosts(user?._id);
 
   const sameUser = currentUser?.email === user?.email && true;
 
   const subject = sameUser ? 'you' : user?.firstName;
-
-  useEffect(() => {
-    if (!user) return;
-
-    if (token) {
-      fetch(`${process.env.BACKEND_URL}/users/${user._id}/posts`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }).then((response) =>
-        response.json().then((data) => {
-          if (data.error) {
-          } else setPosts(data.posts);
-        })
-      );
-    }
-  }, [token, user]);
 
   return (
     <Grid

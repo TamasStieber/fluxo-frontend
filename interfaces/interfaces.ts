@@ -24,6 +24,7 @@ export interface Post {
   createdAt: Date;
   contentUpdated: Date;
   updatedAt: Date;
+  photos: string[];
   comments: string[];
   commentsCount: number;
   likes: User[];

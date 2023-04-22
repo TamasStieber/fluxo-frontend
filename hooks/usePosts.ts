@@ -16,7 +16,6 @@ const usePosts = (userId?: string) => {
   else url = `${process.env.BACKEND_URL}/posts/`;
 
   useEffect(() => {
-    setLoading(true);
     try {
       fetch(url, {
         headers: {
@@ -35,29 +34,24 @@ const usePosts = (userId?: string) => {
     }
   }, [token, url, refreshTrigger]);
 
-  const createPost = (postFormData: PostFormData) => {
+  const createPost = (postFormData: FormData, onClose: () => void) => {
     setCreating(true);
-    try {
-      fetch(`${process.env.BACKEND_URL}/posts`, {
-        method: 'post',
-
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(postFormData),
+    fetch(`${process.env.BACKEND_URL}/posts`, {
+      method: 'post',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: postFormData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (!data.error) {
+          onClose();
+          setPosts([data.post, ...posts]);
+        }
       })
-        .then((response) => response.json())
-        .then((data) => {
-          if (!data.error) {
-            setRefreshTrigger(!refreshTrigger);
-          }
-        });
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setCreating(false);
-    }
+      .catch((error) => setError(error))
+      .finally(() => setCreating(false));
   };
 
   const updatePost = (formData: FormData) => {};

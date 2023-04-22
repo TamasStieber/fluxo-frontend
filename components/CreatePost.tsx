@@ -1,49 +1,75 @@
-import { CreatePostProps } from '@/interfaces/props';
-import { Stack, Button, Text, Flex } from '@chakra-ui/react';
-import { ChangeEvent, useState, useContext, FormEvent } from 'react';
-import AutoResizeTextarea from './AutoResizeTextarea';
+import {
+  Button,
+  Text,
+  Box,
+  HStack,
+  Divider,
+  Icon,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { useContext, useState } from 'react';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import UserAvatar from './UserAvatar';
+import { HiOutlinePhoto } from 'react-icons/hi2';
+import { AiOutlineUserAdd } from 'react-icons/ai';
+import { FaRegLaughBeam } from 'react-icons/fa';
+import CreatePostModal from './CreatePostModal';
+import { CreatePostModalOptions } from '@/interfaces/props';
 
-const CreatePost = ({ createPost, isCreating }: CreatePostProps) => {
+const CreatePost = () => {
   const { currentUser } = useContext(CurrentUserContext);
-  const [error, setError] = useState('');
-  const [value, setValue] = useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [options, setOptions] = useState<CreatePostModalOptions>(
+    CreatePostModalOptions.Text
+  );
 
   const placeHolder = `What's on your mind, ${currentUser?.firstName}?`;
 
-  const handleChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    if (event.target.value !== '' && error !== '') setError('');
-    setValue(event.target.value);
+  const openWithText = () => {
+    setOptions(CreatePostModalOptions.Text);
+    onOpen();
   };
 
-  const submitHandler = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!currentUser) return;
-    if (value === '') return setError('Oops! You forgot to fill this field!');
-    const postFormData = {
-      author: currentUser._id,
-      content: value,
-    };
-
-    createPost(postFormData);
+  const openWithPhotos = () => {
+    setOptions(CreatePostModalOptions.Photos);
+    onOpen();
   };
 
   return (
-    <form onSubmit={(event) => submitHandler(event)}>
-      <Stack>
-        <AutoResizeTextarea
-          value={value}
-          onChange={handleChange}
-          placeholder={placeHolder}
-        />
-        <Flex justifyContent='flex-end'>
-          <Button isLoading={isCreating} type='submit' colorScheme='green'>
-            Post
+    <>
+      <Box marginTop={4} marginBottom={6}>
+        <HStack>
+          <UserAvatar user={currentUser} size='md' />
+          <Box
+            flexGrow={1}
+            borderRadius='20px'
+            padding={2}
+            backgroundColor='gray.100'
+            onClick={openWithText}
+          >
+            <Text fontSize='xl' textColor='gray.500'>
+              {placeHolder}
+            </Text>
+          </Box>
+        </HStack>
+        <Divider marginY={2} />
+        <HStack justifyContent='space-evenly'>
+          <Button colorScheme='green' variant='ghost' onClick={openWithPhotos}>
+            <Icon fontSize='1.5rem' marginRight={2} as={HiOutlinePhoto} />
+            Photos
           </Button>
-        </Flex>
-      </Stack>
-      <Text color='red.400'>{error}</Text>
-    </form>
+          <Button colorScheme='blue' variant='ghost'>
+            <Icon fontSize='1.5rem' marginRight={2} as={AiOutlineUserAdd} />
+            Tag Friends
+          </Button>
+          <Button colorScheme='orange' variant='ghost'>
+            <Icon fontSize='1.5rem' marginRight={2} as={FaRegLaughBeam} />
+            Feeling/Activity
+          </Button>
+        </HStack>
+      </Box>
+      <CreatePostModal options={options} isOpen={isOpen} onClose={onClose} />
+    </>
   );
 };
 

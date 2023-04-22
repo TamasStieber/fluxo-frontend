@@ -45,7 +45,6 @@ const useCurrentUser = () => {
         response.json().then((data) => {
           if (!data.error) {
             setCurrentUser(data);
-            // setUpdating(false);
             toast({
               title: 'Profile updated successfully.',
               status: 'success',
@@ -55,10 +54,7 @@ const useCurrentUser = () => {
           }
         })
       )
-      .catch((error) => {
-        setError(error as Error);
-        // setUpdating(false);
-      })
+      .catch((error) => setError(error as Error))
       .finally(() => setUpdating(false));
   };
 

@@ -25,7 +25,8 @@ const AutoResizeTextarea = (props: AutoResizeTextareaProps) => {
     <Textarea
       ref={textareaRef}
       {...props}
-      rows={1}
+      autoFocus
+      rows={3}
       resize='none'
       overflow='hidden'
     />

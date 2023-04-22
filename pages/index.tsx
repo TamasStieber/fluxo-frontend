@@ -7,7 +7,8 @@ import { Post } from '@/interfaces/interfaces';
 import { checkAuth } from '@/utils/utils';
 import { useState, useEffect } from 'react';
 import usePosts from '@/hooks/usePosts';
-import { Spinner } from '@chakra-ui/react';
+import { Box, Spinner } from '@chakra-ui/react';
+import { PostsContext } from '@/contexts/PostsContext';
 
 const Home = () => {
   const {
@@ -29,16 +30,28 @@ const Home = () => {
   return (
     <MainWrapper>
       <PageContainer>
-        <CreatePost createPost={createPost} isCreating={isCreating} />
-        <Feed
-          posts={posts}
-          isLoading={isLoading}
-          isUpdating={isUpdating}
-          error={error}
-          updatePost={updatePost}
-          deletePost={deletePost}
-          handleLikeClick={handleLikeClick}
-        />
+        <PostsContext.Provider
+          value={{
+            posts,
+            isLoading,
+            isCreating,
+            error,
+            createPost,
+          }}
+        >
+          <Box maxWidth={700} marginX='auto'>
+            <CreatePost />
+            <Feed
+              posts={posts}
+              isLoading={isLoading}
+              isUpdating={isUpdating}
+              error={error}
+              updatePost={updatePost}
+              deletePost={deletePost}
+              handleLikeClick={handleLikeClick}
+            />
+          </Box>
+        </PostsContext.Provider>
       </PageContainer>
     </MainWrapper>
   );

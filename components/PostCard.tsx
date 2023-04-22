@@ -25,6 +25,7 @@ import {
   ModalOverlay,
   Stack,
   Text,
+  VStack,
   useDisclosure,
 } from '@chakra-ui/react';
 import React, {
@@ -42,9 +43,9 @@ import UserAvatar from './UserAvatar';
 import FormattedPostContent from './FormattedPostContent';
 import Comments from './Comments';
 import { CurrentUserContext } from '@/contexts/CurrentUserContext';
+import PostPhotos from './PostPhotos';
 
 const PostCard = ({ post }: PostCardProps) => {
-  // const creationDate = new Date(post.createdAt);
   const { currentUser } = useContext(CurrentUserContext);
   const [timeAgo, setTimeAgo] = useState(
     calculatePassedTime(new Date(post.createdAt))
@@ -53,13 +54,11 @@ const PostCard = ({ post }: PostCardProps) => {
   const [currentPost, setCurrentPost] = useState(post);
   const [editMode, setEditMode] = useState(false);
   const contentEditRef = useRef<HTMLInputElement>(null);
-  // const currentUserId = getCurrentUserId();
   const isEdited = currentPost.contentUpdated && true;
   const token = checkAuth();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const postContentLength = 200;
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const isCurrentUserAuthor = currentUser?._id === post.author._id;
 
@@ -180,22 +179,28 @@ const PostCard = ({ post }: PostCardProps) => {
             )}
           </HStack>
         </HStack>
-        {editMode ? (
-          <form onSubmit={(event) => handleUpdate(event)}>
-            <Input
-              ref={contentEditRef}
-              defaultValue={post.content}
-              autoFocus={editMode}
-              onBlur={() => setEditMode(false)}
+        <VStack alignItems='flex-start' spacing={4}>
+          {editMode ? (
+            <form onSubmit={(event) => handleUpdate(event)}>
+              <Input
+                ref={contentEditRef}
+                defaultValue={post.content}
+                autoFocus={editMode}
+                onBlur={() => setEditMode(false)}
+              />
+            </form>
+          ) : (
+            <FormattedPostContent
+              length={postContentLength}
+              content={currentPost.content}
             />
-          </form>
-        ) : (
-          <FormattedPostContent
-            length={postContentLength}
-            content={currentPost.content}
+          )}
+          <PostPhotos
+            photoFolder={post.author.photosFolder}
+            photos={post.photos}
           />
-        )}
-        <Likes post={post} />
+          <Likes post={post} />
+        </VStack>
         <Divider marginTop={4} />
         <Comments postId={post._id} commentsCount={post.comments.length} />
       </Box>
@@ -219,10 +224,14 @@ const OnDeleteModal = ({ isOpen, onClose, deleteHandler }: ModalProps) => {
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader>Delete Post</ModalHeader>
+        <ModalHeader>Are you sure?</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
           <Text>Do you really want to delete this post?</Text>
+          <Text fontSize='sm'>
+            Any photos you uploaded will remain available on your profile until
+            you delete them.
+          </Text>
         </ModalBody>
 
         <ModalFooter>

@@ -8,14 +8,13 @@ interface TextWithLinksProps {
 const TextWithLinks = ({ text }: TextWithLinksProps) => {
   const regex = /(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9]+\.[a-zA-Z]+/;
   const lines = text.split('\n');
-  const words = text.split(/\s+/);
 
   const color = useColorModeValue('blue.500', 'blue.300');
 
   return (
     <>
       {lines.map((line, index) => (
-        <div key={index}>
+        <span key={index} style={{ display: 'block' }}>
           {line.split(/\s+/).map((word, index) => {
             if (regex.test(word)) {
               const href = word.includes('http') ? word : 'http://' + word;
@@ -30,7 +29,7 @@ const TextWithLinks = ({ text }: TextWithLinksProps) => {
               return <span key={index}>{word} </span>;
             }
           })}
-        </div>
+        </span>
       ))}
     </>
   );
