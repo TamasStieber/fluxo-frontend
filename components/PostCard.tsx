@@ -179,7 +179,7 @@ const PostCard = ({ post }: PostCardProps) => {
             )}
           </HStack>
         </HStack>
-        <VStack alignItems='flex-start' spacing={4}>
+        <VStack alignItems='stretch' spacing={4}>
           {editMode ? (
             <form onSubmit={(event) => handleUpdate(event)}>
               <Input
